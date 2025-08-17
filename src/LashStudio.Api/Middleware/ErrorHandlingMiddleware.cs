@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LashStudio.Application.Common.Abstractions;
+using System.Net;
 using System.Text.Json;
 
 namespace LashStudio.Api.Middleware;
@@ -46,6 +47,11 @@ public sealed class ErrorHandlingMiddleware
             ctx.Response.StatusCode = StatusCodes.Status404NotFound;
             await ctx.Response.WriteAsJsonAsync(new { error = "not_found", traceId = ctx.TraceIdentifier });
         }
+        catch (ArgumentException aex)
+        {
+            ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await ctx.Response.WriteAsJsonAsync(new { error = aex.Message, traceId = ctx.TraceIdentifier });
+        }
         catch (Exception ex)
         {
             await err.LogAsync(
@@ -58,6 +64,6 @@ public sealed class ErrorHandlingMiddleware
 
             ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
             await ctx.Response.WriteAsJsonAsync(new { error = "server_error", traceId = ctx.TraceIdentifier });
-        }
+        }       
     }
 }

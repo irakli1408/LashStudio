@@ -1,5 +1,6 @@
 ﻿using LashStudio.Application.Common.Abstractions;
 using LashStudio.Domain.Blog;
+using LashStudio.Domain.Media;
 using LashStudio.Infrastructure.Localization;
 using LashStudio.Infrastructure.Logs;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,8 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<LogEntry> Logs => Set<LogEntry>();
     public DbSet<LocalizationResource> LocalizationResources => Set<LocalizationResource>();
     public DbSet<LocalizationValue> LocalizationValues => Set<LocalizationValue>();
+    public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder b)
@@ -59,6 +62,17 @@ public class AppDbContext : DbContext, IAppDbContext
             e.Property(x => x.Culture).HasMaxLength(10).IsRequired();
             e.Property(x => x.Value).IsRequired();
             e.HasIndex(x => new { x.ResourceId, x.Culture }).IsUnique();
+        });
+
+        b.Entity<MediaAsset>(e =>
+        {
+            e.ToTable("MediaAssets");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Type).IsRequired();
+            e.Property(x => x.OriginalFileName).HasMaxLength(255).IsRequired();
+            e.Property(x => x.StoredPath).HasMaxLength(300).IsRequired();
+            e.Property(x => x.ContentType).HasMaxLength(100).IsRequired();
+            e.HasIndex(x => x.Type);
         });
     }
 }

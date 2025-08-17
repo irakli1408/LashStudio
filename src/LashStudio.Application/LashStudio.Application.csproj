@@ -19,4 +19,8 @@
     <ProjectReference Include="..\LashStudio.Domain\LashStudio.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Handlers\Admin\Queries\" />
+  </ItemGroup>
+
 </Project>
