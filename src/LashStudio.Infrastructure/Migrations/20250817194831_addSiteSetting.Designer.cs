@@ -4,6 +4,7 @@ using LashStudio.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LashStudio.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250817194831_addSiteSetting")]
+    partial class addSiteSetting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,9 +33,6 @@ namespace LashStudio.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long?>("CoverMediaId")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -48,8 +48,6 @@ namespace LashStudio.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CoverMediaId");
 
                     b.ToTable("Posts");
                 });
@@ -343,16 +341,6 @@ namespace LashStudio.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("SiteSettings", (string)null);
-                });
-
-            modelBuilder.Entity("LashStudio.Domain.Blog.Post", b =>
-                {
-                    b.HasOne("LashStudio.Domain.Media.MediaAsset", "CoverMedia")
-                        .WithMany()
-                        .HasForeignKey("CoverMediaId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("CoverMedia");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.Blog.PostLocale", b =>

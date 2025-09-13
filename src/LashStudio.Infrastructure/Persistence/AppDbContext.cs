@@ -1,6 +1,8 @@
 ﻿using LashStudio.Application.Common.Abstractions;
 using LashStudio.Domain.Blog;
+using LashStudio.Domain.Faq;
 using LashStudio.Domain.Media;
+using LashStudio.Domain.Settings;
 using LashStudio.Infrastructure.Localization;
 using LashStudio.Infrastructure.Logs;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +17,12 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<LocalizationResource> LocalizationResources => Set<LocalizationResource>();
     public DbSet<LocalizationValue> LocalizationValues => Set<LocalizationValue>();
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+    public DbSet<FaqItem> FaqItems => Set<FaqItem>();
+    public DbSet<FaqItemLocale> FaqItemLocales => Set<FaqItemLocale>();
+    public DbSet<SiteSetting> SiteSettings => Set<SiteSetting>();
+    public DbSet<SiteSettingValue> SiteSettingValues => Set<SiteSettingValue>();
+    public new DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
+
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -25,6 +33,11 @@ public class AppDbContext : DbContext, IAppDbContext
             e.HasKey(x => x.Id);
             e.Property(x => x.SlugDefault).HasMaxLength(256).IsRequired();
             e.HasMany(x => x.Locales).WithOne(x => x.Post).HasForeignKey(x => x.PostId);
+
+            e.HasOne(x => x.CoverMedia)
+             .WithMany()
+             .HasForeignKey(x => x.CoverMediaId)
+             .OnDelete(DeleteBehavior.SetNull);
         });
 
         b.Entity<PostLocale>(e =>
@@ -73,6 +86,49 @@ public class AppDbContext : DbContext, IAppDbContext
             e.Property(x => x.StoredPath).HasMaxLength(300).IsRequired();
             e.Property(x => x.ContentType).HasMaxLength(100).IsRequired();
             e.HasIndex(x => x.Type);
+        });
+
+        b.Entity<FaqItem>(e =>
+        {
+            e.ToTable("FaqItems");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.IsActive).IsRequired();
+            e.Property(x => x.SortOrder).IsRequired();
+            e.HasMany(x => x.Locales)
+             .WithOne(l => l.FaqItem)
+             .HasForeignKey(l => l.FaqItemId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        b.Entity<FaqItemLocale>(e =>
+        {
+            e.ToTable("FaqItemLocales");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Culture).HasMaxLength(10).IsRequired();
+            e.Property(x => x.Question).HasMaxLength(256).IsRequired();
+            e.Property(x => x.Answer).IsRequired();
+            e.HasIndex(x => new { x.FaqItemId, x.Culture }).IsUnique();
+        });
+
+        b.Entity<SiteSetting>(e =>
+        {
+            e.ToTable("SiteSettings");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Key).HasMaxLength(128).IsRequired();
+            e.HasIndex(x => x.Key).IsUnique();
+            e.HasMany(x => x.Values)
+             .WithOne(v => v.Setting)
+             .HasForeignKey(v => v.SiteSettingId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        b.Entity<SiteSettingValue>(e =>
+        {
+            e.ToTable("SiteSettingValues");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Culture).HasMaxLength(10); // может быть null
+            e.Property(x => x.Value).IsRequired();
+            e.HasIndex(x => new { x.SiteSettingId, x.Culture }).IsUnique();
         });
     }
 }

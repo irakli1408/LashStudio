@@ -4,6 +4,7 @@ using LashStudio.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LashStudio.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250817133128_addFaqEntity")]
+    partial class addFaqEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,9 +33,6 @@ namespace LashStudio.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long?>("CoverMediaId")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -48,8 +48,6 @@ namespace LashStudio.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CoverMediaId");
 
                     b.ToTable("Posts");
                 });
@@ -200,34 +198,6 @@ namespace LashStudio.Infrastructure.Migrations
                     b.ToTable("MediaAssets", (string)null);
                 });
 
-            modelBuilder.Entity("LashStudio.Domain.Settings.SiteSettingValue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Culture")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<int>("SiteSettingId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SiteSettingId", "Culture")
-                        .IsUnique()
-                        .HasFilter("[Culture] IS NOT NULL");
-
-                    b.ToTable("SiteSettingValues", (string)null);
-                });
-
             modelBuilder.Entity("LashStudio.Infrastructure.Localization.LocalizationResource", b =>
                 {
                     b.Property<int>("Id")
@@ -324,37 +294,6 @@ namespace LashStudio.Infrastructure.Migrations
                     b.ToTable("Logs");
                 });
 
-            modelBuilder.Entity("SiteSetting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Key")
-                        .IsUnique();
-
-                    b.ToTable("SiteSettings", (string)null);
-                });
-
-            modelBuilder.Entity("LashStudio.Domain.Blog.Post", b =>
-                {
-                    b.HasOne("LashStudio.Domain.Media.MediaAsset", "CoverMedia")
-                        .WithMany()
-                        .HasForeignKey("CoverMediaId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("CoverMedia");
-                });
-
             modelBuilder.Entity("LashStudio.Domain.Blog.PostLocale", b =>
                 {
                     b.HasOne("LashStudio.Domain.Blog.Post", "Post")
@@ -375,17 +314,6 @@ namespace LashStudio.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("FaqItem");
-                });
-
-            modelBuilder.Entity("LashStudio.Domain.Settings.SiteSettingValue", b =>
-                {
-                    b.HasOne("SiteSetting", "Setting")
-                        .WithMany("Values")
-                        .HasForeignKey("SiteSettingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Setting");
                 });
 
             modelBuilder.Entity("LashStudio.Infrastructure.Localization.LocalizationValue", b =>
@@ -410,11 +338,6 @@ namespace LashStudio.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("LashStudio.Infrastructure.Localization.LocalizationResource", b =>
-                {
-                    b.Navigation("Values");
-                });
-
-            modelBuilder.Entity("SiteSetting", b =>
                 {
                     b.Navigation("Values");
                 });

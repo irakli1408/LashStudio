@@ -1,4 +1,6 @@
-﻿namespace LashStudio.Domain.Blog;
+﻿using LashStudio.Domain.Media;
+
+namespace LashStudio.Domain.Blog;
 
 public enum PostStatus { Draft = 0, Published = 1 }
 
@@ -9,6 +11,9 @@ public class Post
     public PostStatus Status { get; set; } = PostStatus.Draft;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? PublishedAt { get; set; }
+
+    public long? CoverMediaId { get; set; }
+    public MediaAsset? CoverMedia { get; set; }
 
     public ICollection<PostLocale> Locales { get; set; } = new List<PostLocale>();
 }

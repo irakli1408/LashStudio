@@ -4,7 +4,7 @@ using LashStudio.Domain.Media;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LashStudio.Api.Controllers;
+namespace LashStudio.Api.Controllers.Admin;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/{culture}/admin/media")]

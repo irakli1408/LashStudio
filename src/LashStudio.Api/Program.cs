@@ -25,6 +25,10 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
         ?? "Server=DESKTOP-BT4EB20;Database=LashStudio;Trusted_Connection=True;TrustServerCertificate=True"));
 builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
 
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(LashStudio.Application.Handlers.Admin.Commands.Publish.Post.PublishPostCommand).Assembly));
+
+
 // MediatR (сканим Application)
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(UploadMediaHandler).Assembly));
 

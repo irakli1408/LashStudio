@@ -1,11 +1,15 @@
 ﻿using LashStudio.Domain.Blog;
+using LashStudio.Domain.Faq;
 using LashStudio.Domain.Media;
+using LashStudio.Domain.Settings;
 using Microsoft.EntityFrameworkCore;
 
 namespace LashStudio.Application.Common.Abstractions;
 
 public interface IAppDbContext
-{  
+{
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
+
         // Блог
         DbSet<Post> Posts { get; }
         DbSet<PostLocale> PostLocales { get; }
@@ -13,6 +17,14 @@ public interface IAppDbContext
         // Медиа (фото/видео)
         DbSet<MediaAsset> MediaAssets { get; }
 
-        // Сохранение изменений
-        Task<int> SaveChangesAsync(CancellationToken ct = default);
+        //Faq
+        DbSet<FaqItem> FaqItems { get; }
+        DbSet<FaqItemLocale> FaqItemLocales { get; }
+
+        //SiteSetting
+        DbSet<SiteSetting> SiteSettings { get; }
+        DbSet<SiteSettingValue> SiteSettingValues { get; }
+
+    // Сохранение изменений
+    Task<int> SaveChangesAsync(CancellationToken ct = default);
 }
