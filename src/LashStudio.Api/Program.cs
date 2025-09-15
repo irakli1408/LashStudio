@@ -7,6 +7,7 @@ using LashStudio.Application.Handlers.Admin.Commands; // для сканиров
 using LashStudio.Application.Handlers.Admin.Commands.Media;
 using LashStudio.Infrastructure.Cache;
 using LashStudio.Infrastructure.Logs;
+using LashStudio.Infrastructure.Media;
 using LashStudio.Infrastructure.Persistence;
 using LashStudio.Infrastructure.Storage;
 using LashStudio.Infrastructure.Time;
@@ -16,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,14 @@ builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbConte
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(LashStudio.Application.Handlers.Admin.Commands.Publish.Post.PublishPostCommand).Assembly));
 
+builder.Services.AddControllers().AddJsonOptions(o =>
+    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+//Media
+builder.Services.Configure<MediaUrlOptions>(
+    builder.Configuration.GetSection("Media"));
+
+builder.Services.AddScoped<IMediaUrlBuilder, MediaUrlBuilder>();
 
 // MediatR (сканим Application)
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(UploadMediaHandler).Assembly));

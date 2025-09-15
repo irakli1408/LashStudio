@@ -1,5 +1,6 @@
 ﻿using LashStudio.Application.Common.Abstractions;
 using LashStudio.Domain.Blog;
+using LashStudio.Domain.Courses;
 using LashStudio.Domain.Faq;
 using LashStudio.Domain.Media;
 using LashStudio.Domain.Settings;
@@ -21,6 +22,9 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<FaqItemLocale> FaqItemLocales => Set<FaqItemLocale>();
     public DbSet<SiteSetting> SiteSettings => Set<SiteSetting>();
     public DbSet<SiteSettingValue> SiteSettingValues => Set<SiteSettingValue>();
+    public DbSet<Course> Courses => Set<Course>();
+    public DbSet<CourseLocale> CourseLocales => Set<CourseLocale>();
+    public DbSet<CourseMedia> CourseMedia => Set<CourseMedia>();
     public new DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
 
 

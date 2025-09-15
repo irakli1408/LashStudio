@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LashStudio.Application.Common.Abstractions;
+using LashStudio.Application.Exceptions;
 using System.Net;
 using System.Text.Json;
 
@@ -34,7 +35,7 @@ public sealed class ErrorHandlingMiddleware
             ctx.Response.StatusCode = StatusCodes.Status400BadRequest;
             await ctx.Response.WriteAsJsonAsync(new { error = "validation_error", traceId = ctx.TraceIdentifier, details });
         }
-        catch (KeyNotFoundException)
+        catch (NotFoundException)
         {
             await err.LogAsync(
                 message: "Not found",

@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using LashStudio.Application.Handlers.Admin.Commands.Publish.Common;
 using LashStudio.Application.Handlers.Admin.Commands.Publish.Post;
+using LashStudio.Domain.Courses;
 using LashStudio.Domain.Faq;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,12 @@ public sealed class AdminPublishController : ApiControllerBase
             // case "portfolio":
             //     await Sender.Send(new SetActiveCommand<PortfolioItem, long>(id, active));
             //     return NoContent();
+
+            //Courses
+            case "course":
+            case "courses":
+                await Sender.Send(new SetActiveCommand<Course, long>(id, active));
+                return NoContent();
 
             // Блог — отдельный флоу (Status/PublishedAt)
             case "post":

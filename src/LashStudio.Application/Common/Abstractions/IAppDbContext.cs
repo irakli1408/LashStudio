@@ -1,4 +1,5 @@
 ﻿using LashStudio.Domain.Blog;
+using LashStudio.Domain.Courses;
 using LashStudio.Domain.Faq;
 using LashStudio.Domain.Media;
 using LashStudio.Domain.Settings;
@@ -24,6 +25,11 @@ public interface IAppDbContext
         //SiteSetting
         DbSet<SiteSetting> SiteSettings { get; }
         DbSet<SiteSettingValue> SiteSettingValues { get; }
+
+        //Course
+        DbSet<Course> Courses { get; }
+        DbSet<CourseLocale> CourseLocales { get; }
+        DbSet<CourseMedia> CourseMedia { get; }
 
     // Сохранение изменений
     Task<int> SaveChangesAsync(CancellationToken ct = default);
