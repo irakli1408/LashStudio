@@ -3,9 +3,12 @@ using LashStudio.Api.Localization;
 using LashStudio.Api.Middleware;
 using LashStudio.Application.Common.Abstractions;
 using LashStudio.Application.Common.Options;
-using LashStudio.Application.Handlers.Admin.Commands; // для сканирования MediatR
 using LashStudio.Application.Handlers.Admin.Commands.Media;
+using LashStudio.Application.Handlers.Admin.Commands.Publish.Common;
+using LashStudio.Application.Handlers.Admin.Commands.Publish.Common.Helper;
 using LashStudio.Infrastructure.Cache;
+using LashStudio.Infrastructure.Config.CurrentStateService;
+using LashStudio.Infrastructure.Config.Media;
 using LashStudio.Infrastructure.Logs;
 using LashStudio.Infrastructure.Media;
 using LashStudio.Infrastructure.Persistence;
@@ -29,6 +32,13 @@ builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbConte
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(LashStudio.Application.Handlers.Admin.Commands.Publish.Post.PublishPostCommand).Assembly));
+
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblies(
+        typeof(SetActiveCourseHandler).Assembly  // Application
+    );
+});
 
 builder.Services.AddControllers().AddJsonOptions(o =>
     o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -57,6 +67,11 @@ builder.Services.Configure<LashStudio.Api.Config.LocalizationOptions>(builder.Co
 builder.Services.Configure<MediaOptions>(builder.Configuration.GetSection("Media"));
 builder.Services.AddScoped<IFileStorage, LocalFileStorage>();
 builder.Services.Configure<FormOptions>(o => o.MultipartBodyLengthLimit = 2L * 1024 * 1024 * 1024);
+builder.Services.AddScoped<IMediaAttachmentService, MediaAttachmentService>();
+
+//CurrentCulture
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentStateService, CurrentStateService>();
 
 // Controllers + versioning
 builder.Services.AddControllers();

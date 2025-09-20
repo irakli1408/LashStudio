@@ -1,8 +1,11 @@
 ﻿using LashStudio.Application.Common.Abstractions;
 using LashStudio.Application.Handlers.Admin.Commands.Courses.DTO;
+using LashStudio.Application.Handlers.Common.Queries.ListMedia;
 using LashStudio.Application.Handlers.Public.Queries.Blog.GetBlogs;
+using LashStudio.Domain.Media;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminList
 {
@@ -28,6 +31,10 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminLi
 
             var total = await baseQ.CountAsync(ct);
 
+           
+
+
+
             var items = await baseQ
                 .OrderByDescending(x => x.PublishedAtUtc ?? x.CreatedAtUtc)
                 .Skip((q.Page - 1) * q.PageSize)
@@ -48,6 +55,8 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminLi
                     ?? c.Locales.Select(l => l.Title).FirstOrDefault(),
                     c.CoverMediaId))
                 .ToListAsync(ct);
+
+
 
             return new PagedResult<CourseAdminListItemVm>(total, q.Page, q.PageSize, items);
         }

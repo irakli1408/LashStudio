@@ -3,6 +3,7 @@ using LashStudio.Application.Handlers.Admin.Commands.Publish.Common;
 using LashStudio.Application.Handlers.Admin.Commands.Publish.Post;
 using LashStudio.Domain.Courses;
 using LashStudio.Domain.Faq;
+using LashStudio.Domain.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,11 +25,11 @@ public sealed class AdminPublishController : ApiControllerBase
                 await Sender.Send(new SetActiveCommand<FaqItem, long>(id, active));
                 return NoContent();
 
-            // Раскомментируешь, когда появятся соответствующие сущности
+                //Раскомментируешь, когда появятся соответствующие сущности
             // case "service":
-            // case "services":
-            //     await Sender.Send(new SetActiveCommand<Service, long>(id, active));
-            //     return NoContent();
+            //case "services":
+            //    await Sender.Send(new SetActiveCommand<Service, Guid>(id, active));
+            //    return NoContent();
 
             // case "portfolio":
             //     await Sender.Send(new SetActiveCommand<PortfolioItem, long>(id, active));

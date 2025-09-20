@@ -1,8 +1,11 @@
 ﻿using LashStudio.Application.Common.Abstractions;
+using LashStudio.Domain.AboutPerson;
 using LashStudio.Domain.Blog;
+using LashStudio.Domain.Contacts;
 using LashStudio.Domain.Courses;
 using LashStudio.Domain.Faq;
 using LashStudio.Domain.Media;
+using LashStudio.Domain.Services;
 using LashStudio.Domain.Settings;
 using LashStudio.Infrastructure.Localization;
 using LashStudio.Infrastructure.Logs;
@@ -25,8 +28,21 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<CourseLocale> CourseLocales => Set<CourseLocale>();
     public DbSet<CourseMedia> CourseMedia => Set<CourseMedia>();
-    public new DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
+    public DbSet<Service> Services => Set<Service>();
+    public DbSet<ServiceLocale> ServiceLocales => Set<ServiceLocale>();
+    public DbSet<ServiceMedia> ServiceMedia => Set<ServiceMedia>();
+    public DbSet<MediaAttachment> MediaAttachments => Set<MediaAttachment>();
+    public DbSet<AboutPage> AboutPages => Set<AboutPage>();
+    public DbSet<AboutPageLocale> AboutPageLocales => Set<AboutPageLocale>();
+    public DbSet<ContactProfile> ContactProfiles => Set<ContactProfile>();
+    public DbSet<ContactProfileLocale> ContactProfileLocales => Set<ContactProfileLocale>();
+    public DbSet<ContactBusinessHour> ContactBusinessHours => Set<ContactBusinessHour>();
+    public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
+    public DbSet<ContactCta> ContactCtas { get; set; } = default!;
+    public DbSet<ContactCtaLocale> ContactCtaLocales { get; set; } = default!;
 
+
+    public new DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

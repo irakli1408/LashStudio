@@ -1,7 +1,10 @@
-﻿using LashStudio.Domain.Blog;
+﻿using LashStudio.Domain.AboutPerson;
+using LashStudio.Domain.Blog;
+using LashStudio.Domain.Contacts;
 using LashStudio.Domain.Courses;
 using LashStudio.Domain.Faq;
 using LashStudio.Domain.Media;
+using LashStudio.Domain.Services;
 using LashStudio.Domain.Settings;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +20,7 @@ public interface IAppDbContext
 
         // Медиа (фото/видео)
         DbSet<MediaAsset> MediaAssets { get; }
+        DbSet<MediaAttachment> MediaAttachments { get; }
 
         //Faq
         DbSet<FaqItem> FaqItems { get; }
@@ -30,6 +34,23 @@ public interface IAppDbContext
         DbSet<Course> Courses { get; }
         DbSet<CourseLocale> CourseLocales { get; }
         DbSet<CourseMedia> CourseMedia { get; }
+
+        //Services
+        DbSet<Service> Services { get; }
+        DbSet<ServiceLocale> ServiceLocales { get; }
+        DbSet<ServiceMedia> ServiceMedia { get; }
+
+        //About
+        DbSet<AboutPage> AboutPages { get; }
+        DbSet<AboutPageLocale> AboutPageLocales { get; }
+
+        //Contacts
+        DbSet<ContactProfile> ContactProfiles { get; }
+        DbSet<ContactProfileLocale> ContactProfileLocales { get; }
+        DbSet<ContactBusinessHour> ContactBusinessHours { get; }
+        DbSet<ContactMessage> ContactMessages { get; }
+        DbSet<ContactCta> ContactCtas { get; }
+        DbSet<ContactCtaLocale> ContactCtaLocales { get; }
 
     // Сохранение изменений
     Task<int> SaveChangesAsync(CancellationToken ct = default);

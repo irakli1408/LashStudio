@@ -22,6 +22,73 @@ namespace LashStudio.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("LashStudio.Domain.AboutPerson.AboutPage", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCover")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("PublishedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SeoDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SeoKeywordsCsv")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SeoTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AboutPages");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.AboutPerson.AboutPageLocale", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AboutPageId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BodyHtml")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Culture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AboutPageId");
+
+                    b.ToTable("AboutPageLocales");
+                });
+
             modelBuilder.Entity("LashStudio.Domain.Blog.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -92,6 +159,214 @@ namespace LashStudio.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("PostLocales");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactBusinessHour", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<TimeOnly?>("Close")
+                        .HasColumnType("time");
+
+                    b.Property<long>("ContactProfileId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeOnly?>("Open")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactProfileId");
+
+                    b.ToTable("ContactBusinessHours");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactCta", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ContactProfileId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UrlOverride")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactProfileId");
+
+                    b.ToTable("ContactCtas");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactCtaLocale", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ContactCtaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Culture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactCtaId");
+
+                    b.ToTable("ContactCtaLocales");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactMessage", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientIp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ConsentAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactMessages");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactProfile", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("EmailPrimary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmailSales")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Instagram")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("MapLat")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("MapLng")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("MapZoom")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Phones")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PreferredCta")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SeoDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SeoTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telegram")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WhatsApp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactProfiles");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactProfileLocale", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AddressLine")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("ContactProfileId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Culture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HowToFindUs")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrganizationName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactProfileId");
+
+                    b.ToTable("ContactProfileLocales");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.Courses.Course", b =>
@@ -309,6 +584,135 @@ namespace LashStudio.Infrastructure.Migrations
                     b.ToTable("MediaAssets", (string)null);
                 });
 
+            modelBuilder.Entity("LashStudio.Domain.Media.MediaAttachment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCover")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("MediaAssetId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("OwnerKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<short>("OwnerType")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MediaAttachments");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Services.Service", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<short>("Category")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid?>("CoverMediaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("PublishedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<short?>("Variant")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Services");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Services.ServiceLocale", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Culture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ShortDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceLocales");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Services.ServiceMedia", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCover")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("MediaAssetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PosterAssetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceMedia");
+                });
+
             modelBuilder.Entity("LashStudio.Domain.Settings.SiteSettingValue", b =>
                 {
                     b.Property<int>("Id")
@@ -454,6 +858,17 @@ namespace LashStudio.Infrastructure.Migrations
                     b.ToTable("SiteSettings", (string)null);
                 });
 
+            modelBuilder.Entity("LashStudio.Domain.AboutPerson.AboutPageLocale", b =>
+                {
+                    b.HasOne("LashStudio.Domain.AboutPerson.AboutPage", "AboutPage")
+                        .WithMany("Locales")
+                        .HasForeignKey("AboutPageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AboutPage");
+                });
+
             modelBuilder.Entity("LashStudio.Domain.Blog.Post", b =>
                 {
                     b.HasOne("LashStudio.Domain.Media.MediaAsset", "CoverMedia")
@@ -473,6 +888,50 @@ namespace LashStudio.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactBusinessHour", b =>
+                {
+                    b.HasOne("LashStudio.Domain.Contacts.ContactProfile", "ContactProfile")
+                        .WithMany("Hours")
+                        .HasForeignKey("ContactProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContactProfile");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactCta", b =>
+                {
+                    b.HasOne("LashStudio.Domain.Contacts.ContactProfile", "ContactProfile")
+                        .WithMany("Ctas")
+                        .HasForeignKey("ContactProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContactProfile");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactCtaLocale", b =>
+                {
+                    b.HasOne("LashStudio.Domain.Contacts.ContactCta", "ContactCta")
+                        .WithMany("Locales")
+                        .HasForeignKey("ContactCtaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContactCta");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactProfileLocale", b =>
+                {
+                    b.HasOne("LashStudio.Domain.Contacts.ContactProfile", "ContactProfile")
+                        .WithMany("Locales")
+                        .HasForeignKey("ContactProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContactProfile");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.Courses.Course", b =>
@@ -531,6 +990,28 @@ namespace LashStudio.Infrastructure.Migrations
                     b.Navigation("FaqItem");
                 });
 
+            modelBuilder.Entity("LashStudio.Domain.Services.ServiceLocale", b =>
+                {
+                    b.HasOne("LashStudio.Domain.Services.Service", "Service")
+                        .WithMany("Locales")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Services.ServiceMedia", b =>
+                {
+                    b.HasOne("LashStudio.Domain.Services.Service", "Service")
+                        .WithMany("Media")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
+                });
+
             modelBuilder.Entity("LashStudio.Domain.Settings.SiteSettingValue", b =>
                 {
                     b.HasOne("SiteSetting", "Setting")
@@ -553,8 +1034,27 @@ namespace LashStudio.Infrastructure.Migrations
                     b.Navigation("Resource");
                 });
 
+            modelBuilder.Entity("LashStudio.Domain.AboutPerson.AboutPage", b =>
+                {
+                    b.Navigation("Locales");
+                });
+
             modelBuilder.Entity("LashStudio.Domain.Blog.Post", b =>
                 {
+                    b.Navigation("Locales");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactCta", b =>
+                {
+                    b.Navigation("Locales");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Contacts.ContactProfile", b =>
+                {
+                    b.Navigation("Ctas");
+
+                    b.Navigation("Hours");
+
                     b.Navigation("Locales");
                 });
 
@@ -568,6 +1068,13 @@ namespace LashStudio.Infrastructure.Migrations
             modelBuilder.Entity("LashStudio.Domain.Faq.FaqItem", b =>
                 {
                     b.Navigation("Locales");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Services.Service", b =>
+                {
+                    b.Navigation("Locales");
+
+                    b.Navigation("Media");
                 });
 
             modelBuilder.Entity("LashStudio.Infrastructure.Localization.LocalizationResource", b =>
