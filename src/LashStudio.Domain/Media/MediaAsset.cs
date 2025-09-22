@@ -17,4 +17,13 @@ public class MediaAsset
     public string? PosterPath { get; set; }          // для видео
 
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+
+    public string? Extension { get; set; }           // ".jpg" / ".mp4" (нормализовано)
+    public string? HashSha256 { get; set; }
+
+    // soft delete
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAtUtc { get; set; }
+
+    public ICollection<MediaAttachment> Attachments { get; set; } = new List<MediaAttachment>();
 }

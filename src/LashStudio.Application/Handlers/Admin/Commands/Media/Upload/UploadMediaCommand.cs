@@ -1,7 +1,7 @@
 ﻿using LashStudio.Domain.Media;
 using MediatR;
 
-namespace LashStudio.Application.Handlers.Admin.Commands.Media
+namespace LashStudio.Application.Handlers.Admin.Commands.Media.Upload
 {
     public record UploadMediaCommand(
      MediaType Type,

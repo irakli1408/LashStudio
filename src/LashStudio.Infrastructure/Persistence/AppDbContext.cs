@@ -97,16 +97,16 @@ public class AppDbContext : DbContext, IAppDbContext
             e.HasIndex(x => new { x.ResourceId, x.Culture }).IsUnique();
         });
 
-        b.Entity<MediaAsset>(e =>
-        {
-            e.ToTable("MediaAssets");
-            e.HasKey(x => x.Id);
-            e.Property(x => x.Type).IsRequired();
-            e.Property(x => x.OriginalFileName).HasMaxLength(255).IsRequired();
-            e.Property(x => x.StoredPath).HasMaxLength(300).IsRequired();
-            e.Property(x => x.ContentType).HasMaxLength(100).IsRequired();
-            e.HasIndex(x => x.Type);
-        });
+        //b.Entity<MediaAsset>(e =>
+        //{
+        //    e.ToTable("MediaAssets");
+        //    e.HasKey(x => x.Id);
+        //    e.Property(x => x.Type).IsRequired();
+        //    e.Property(x => x.OriginalFileName).HasMaxLength(255).IsRequired();
+        //    e.Property(x => x.StoredPath).HasMaxLength(300).IsRequired();
+        //    e.Property(x => x.ContentType).HasMaxLength(100).IsRequired();
+        //    e.HasIndex(x => x.Type);
+        //});
 
         b.Entity<FaqItem>(e =>
         {

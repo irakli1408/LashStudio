@@ -3,7 +3,7 @@ using LashStudio.Api.Localization;
 using LashStudio.Api.Middleware;
 using LashStudio.Application.Common.Abstractions;
 using LashStudio.Application.Common.Options;
-using LashStudio.Application.Handlers.Admin.Commands.Media;
+using LashStudio.Application.Handlers.Admin.Commands.Media.Upload;
 using LashStudio.Application.Handlers.Admin.Commands.Publish.Common;
 using LashStudio.Application.Handlers.Admin.Commands.Publish.Common.Helper;
 using LashStudio.Infrastructure.Cache;

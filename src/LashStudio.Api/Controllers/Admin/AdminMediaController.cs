@@ -1,10 +1,18 @@
 ﻿using Asp.Versioning;
-using LashStudio.Application.Handlers.Admin.Commands.Media; // UploadMediaCommand
+using LashStudio.Application.Common.Media;
+using LashStudio.Application.Contracts.Media;
+using LashStudio.Application.Handlers.Admin.Commands.Media.Delete;
+using LashStudio.Application.Handlers.Admin.Commands.Media.Restore;
+using LashStudio.Application.Handlers.Admin.Commands.Media.Trash;
+using LashStudio.Application.Handlers.Admin.Commands.Media.Upload;
 using LashStudio.Application.Handlers.Common.Commands.Media.AttachMedia;
 using LashStudio.Application.Handlers.Common.Commands.Media.DetachMedia;
 using LashStudio.Application.Handlers.Common.Commands.Media.ReorderMedia;
 using LashStudio.Application.Handlers.Common.Commands.Media.SetCoverMedia;
 using LashStudio.Application.Handlers.Common.Queries.ListMedia;
+using LashStudio.Application.Handlers.Public.Queries.Blog.GetBlogs;
+using LashStudio.Application.Handlers.Public.Queries.Media.MediaAssets;
+using LashStudio.Application.Handlers.Public.Queries.Media.TrashMediaAssets;
 using LashStudio.Domain.Media;                                // MediaOwnerType, MediaType, MediaAttachment
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -31,9 +39,50 @@ public sealed class AdminMediaController : ApiControllerBase
         return Created(res.PublicUrl, res);
     }
 
-    // ↓↓↓ ключевые изменения — ownerKey:string без :long
+    [HttpDelete("{assetId:long}/trash")]
+    public Task Trash(long assetId, CancellationToken ct)
+       => Sender.Send(new TrashMediaAssetCommand(assetId), ct);
 
-    [HttpPost("{ownerType}/{ownerKey}/{assetId:long}/attach")]
+    [HttpPost("{assetId:long}/restore")]
+    public Task Restore(long assetId, CancellationToken ct)
+        => Sender.Send(new RestoreMediaAssetCommand(assetId), ct);
+
+    [HttpDelete("{assetId:long}")]
+    public Task HardDelete(long assetId, [FromQuery] bool force, CancellationToken ct)
+        => Sender.Send(new DeleteMediaAssetCommand(assetId, force), ct);
+
+    [HttpGet]
+    public Task<PagedResult<MediaAssetListItemVm>> List(
+       [FromQuery] int skip = 0,
+       [FromQuery] int take = 20,
+       [FromQuery] string? search = null,
+       [FromQuery] MediaType? type = null,
+       [FromQuery] string? extension = null,
+       [FromQuery] DateTime? fromUtc = null,
+       [FromQuery] DateTime? toUtc = null,
+       [FromQuery] MediaAssetOrderBy orderBy = MediaAssetOrderBy.CreatedDesc,
+       CancellationToken ct = default)
+       => Sender.Send(new GetMediaAssetsQuery(skip, take, search, type, extension, fromUtc, toUtc, orderBy), ct);
+
+    // Корзина
+    [HttpGet("trash")]
+    public Task<PagedResult<MediaAssetListItemVm>> Trash(
+        [FromQuery] int skip = 0,
+        [FromQuery] int take = 20,
+        [FromQuery] string? search = null,
+        [FromQuery] MediaType? type = null,
+        [FromQuery] string? extension = null,
+        [FromQuery] DateTime? deletedFromUtc = null,
+        [FromQuery] DateTime? deletedToUtc = null,
+        [FromQuery] MediaAssetOrderBy orderBy = MediaAssetOrderBy.CreatedDesc,
+        CancellationToken ct = default)
+        => Sender.Send(new GetTrashMediaAssetsQuery(skip, take, search, type, extension, deletedFromUtc, deletedToUtc, orderBy), ct);
+
+
+
+// ↓↓↓ ключевые изменения — ownerKey:string без :long
+
+[HttpPost("{ownerType}/{ownerKey}/{assetId:long}/attach")]
     public async Task<IActionResult> Attach(MediaOwnerType ownerType, string ownerKey, long assetId, CancellationToken ct)
     {
         await Sender.Send(new AttachMediaCommand(ownerType, ownerKey, assetId), ct);

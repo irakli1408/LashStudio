@@ -19,5 +19,8 @@
         public int SortOrder { get; set; }
         public bool IsCover { get; set; }
         public DateTime CreatedAtUtc { get; set; }
+
+        public MediaAsset MediaAsset { get; set; } = null!;
+
     }
 }

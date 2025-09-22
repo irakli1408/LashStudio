@@ -4,7 +4,7 @@ using LashStudio.Domain.Media;
 using MediatR;
 using Microsoft.Extensions.Options;
 
-namespace LashStudio.Application.Handlers.Admin.Commands.Media
+namespace LashStudio.Application.Handlers.Admin.Commands.Media.Upload
 {
     public sealed class UploadMediaHandler : IRequestHandler<UploadMediaCommand, UploadMediaResult>
     {
