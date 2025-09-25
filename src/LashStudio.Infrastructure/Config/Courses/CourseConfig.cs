@@ -27,10 +27,11 @@ namespace LashStudio.Infrastructure.Config.Courses
                 .HasForeignKey(l => l.CourseId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            b.HasMany(x => x.Media)
-                .WithOne(m => m.Course)
-                .HasForeignKey(m => m.CourseId)
-                .OnDelete(DeleteBehavior.Cascade);
+            b.Property(x => x.OwnerKey)
+                 .HasColumnType("varchar(36)")
+                 .HasComputedColumnSql("LOWER(CONVERT(varchar(36), [Id]))", stored: true);
+
+            b.HasIndex(x => x.OwnerKey).HasDatabaseName("IX_Courses_OwnerKey");
         }
     }
 }

@@ -18,6 +18,14 @@ namespace LashStudio.Application.Contracts.Services
     public record ServiceListItemVm(
         Guid Id, string Slug, string Title, decimal Price, string? CoverUrl);
 
+    public sealed record ServiceListItemWithMediaVm(
+    Guid Id,
+    string Slug,
+    string Title,
+    decimal Price,
+    List<ServiceMediaVm> Media
+);
+
     public record ServiceDetailsVm(
         Guid Id, string Slug, string Title, string? Description, decimal Price, int? DurationMinutes,
         List<ServiceMediaVm> Media);

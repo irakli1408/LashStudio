@@ -19,8 +19,7 @@ namespace LashStudio.Api.Controllers.Admin
 
         // LIST (admin)
         [HttpGet]
-        public Task<List<ServiceListItemVm>> List([FromQuery] ServiceCategory? category, CancellationToken ct)
-            => _m.Send(new GetServiceAdminListQuery(category), ct);
+        public Task<List<ServiceListItemWithMediaVm>> List([FromQuery] ServiceCategory? category, CancellationToken ct) => _m.Send(new GetServiceAdminListQuery(category), ct);
 
         // DETAILS (admin)
         [HttpGet("{id:guid}")]

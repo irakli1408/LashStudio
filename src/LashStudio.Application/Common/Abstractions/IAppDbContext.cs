@@ -33,12 +33,10 @@ public interface IAppDbContext
         //Course
         DbSet<Course> Courses { get; }
         DbSet<CourseLocale> CourseLocales { get; }
-        DbSet<CourseMedia> CourseMedia { get; }
 
         //Services
         DbSet<Service> Services { get; }
         DbSet<ServiceLocale> ServiceLocales { get; }
-        DbSet<ServiceMedia> ServiceMedia { get; }
 
         //About
         DbSet<AboutPage> AboutPages { get; }

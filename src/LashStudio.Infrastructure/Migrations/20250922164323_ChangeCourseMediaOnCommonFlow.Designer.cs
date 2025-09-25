@@ -4,6 +4,7 @@ using LashStudio.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LashStudio.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250922164323_ChangeCourseMediaOnCommonFlow")]
+    partial class ChangeCourseMediaOnCommonFlow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,32 +40,23 @@ namespace LashStudio.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsCover")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("PublishedAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("SeoDescription")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SeoKeywordsCsv")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SeoTitle")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsActive");
-
-                    b.HasIndex("PublishedAtUtc");
-
-                    b.ToTable("AboutPages", (string)null);
+                    b.ToTable("AboutPages");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.AboutPerson.AboutPageLocale", b =>
@@ -82,24 +76,20 @@ namespace LashStudio.Infrastructure.Migrations
 
                     b.Property<string>("Culture")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubTitle")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AboutPageId", "Culture")
-                        .IsUnique();
+                    b.HasIndex("AboutPageId");
 
-                    b.ToTable("AboutPageLocales", (string)null);
+                    b.ToTable("AboutPageLocales");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.Blog.Post", b =>
@@ -199,8 +189,7 @@ namespace LashStudio.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ContactProfileId", "Day")
-                        .IsUnique();
+                    b.HasIndex("ContactProfileId");
 
                     b.ToTable("ContactBusinessHours");
                 });
@@ -226,12 +215,11 @@ namespace LashStudio.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UrlOverride")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ContactProfileId", "Order");
+                    b.HasIndex("ContactProfileId");
 
                     b.ToTable("ContactCtas");
                 });
@@ -249,18 +237,15 @@ namespace LashStudio.Infrastructure.Migrations
 
                     b.Property<string>("Culture")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Label")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ContactCtaId", "Culture")
-                        .IsUnique();
+                    b.HasIndex("ContactCtaId");
 
                     b.ToTable("ContactCtaLocales");
                 });
@@ -278,8 +263,7 @@ namespace LashStudio.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClientIp")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("ConsentAccepted")
                         .HasColumnType("bit");
@@ -288,27 +272,21 @@ namespace LashStudio.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("Subject")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Status", "CreatedAtUtc");
 
                     b.ToTable("ContactMessages");
                 });
@@ -322,16 +300,13 @@ namespace LashStudio.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("EmailPrimary")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmailSales")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Instagram")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("MapLat")
                         .HasColumnType("decimal(18,2)");
@@ -356,12 +331,10 @@ namespace LashStudio.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telegram")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WhatsApp")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -377,29 +350,24 @@ namespace LashStudio.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AddressLine")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("ContactProfileId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Culture")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HowToFindUs")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OrganizationName")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ContactProfileId", "Culture")
-                        .IsUnique();
+                    b.HasIndex("ContactProfileId");
 
                     b.ToTable("ContactProfileLocales");
                 });
@@ -427,12 +395,6 @@ namespace LashStudio.Infrastructure.Migrations
                     b.Property<short>("Level")
                         .HasColumnType("smallint");
 
-                    b.Property<string>("OwnerKey")
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("varchar(36)")
-                        .HasComputedColumnSql("LOWER(CONVERT(varchar(36), [Id]))", true);
-
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -441,25 +403,16 @@ namespace LashStudio.Infrastructure.Migrations
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CoverMediaId");
 
-                    b.HasIndex("OwnerKey")
-                        .HasDatabaseName("IX_Courses_OwnerKey");
-
-                    b.HasIndex("Slug")
-                        .IsUnique();
-
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.Courses.CourseLocale", b =>
@@ -475,8 +428,7 @@ namespace LashStudio.Infrastructure.Migrations
 
                     b.Property<string>("Culture")
                         .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullDescription")
                         .HasColumnType("nvarchar(max)");
@@ -486,15 +438,13 @@ namespace LashStudio.Infrastructure.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId", "Culture")
-                        .IsUnique();
+                    b.HasIndex("CourseId");
 
-                    b.ToTable("CourseLocales", (string)null);
+                    b.ToTable("CourseLocales");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.Courses.CourseMedia", b =>
@@ -596,13 +546,10 @@ namespace LashStudio.Infrastructure.Migrations
 
                     b.Property<string>("ContentType")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DeletedAtUtc")
                         .HasColumnType("datetime2");
@@ -611,37 +558,30 @@ namespace LashStudio.Infrastructure.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("Extension")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HashSha256")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Height")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("bit");
 
                     b.Property<string>("OriginalFileName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PosterPath")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("SizeBytes")
                         .HasColumnType("bigint");
 
                     b.Property<string>("StoredPath")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -651,15 +591,7 @@ namespace LashStudio.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedAtUtc");
-
-                    b.HasIndex("Extension");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("Type");
-
-                    b.ToTable("MediaAssets", (string)null);
+                    b.ToTable("MediaAssets");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.Media.MediaAttachment", b =>
@@ -671,43 +603,29 @@ namespace LashStudio.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsCover")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("bit");
 
                     b.Property<long>("MediaAssetId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("OwnerKey")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<short>("OwnerType")
                         .HasColumnType("smallint");
 
                     b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MediaAssetId");
 
-                    b.HasIndex("OwnerType", "OwnerKey")
-                        .IsUnique()
-                        .HasFilter("[IsCover] = 1");
-
-                    b.HasIndex("OwnerType", "OwnerKey", "MediaAssetId")
-                        .IsUnique();
-
-                    b.ToTable("MediaAttachments", (string)null);
+                    b.ToTable("MediaAttachments");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.Services.Service", b =>
@@ -731,35 +649,22 @@ namespace LashStudio.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OwnerKey")
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("varchar(36)")
-                        .HasComputedColumnSql("LOWER(CONVERT(varchar(36), [Id]))", true);
-
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("PublishedAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<short?>("Variant")
                         .HasColumnType("smallint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerKey")
-                        .HasDatabaseName("IX_Services_OwnerKey");
-
-                    b.HasIndex("Slug")
-                        .IsUnique();
-
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.Services.ServiceLocale", b =>
@@ -770,8 +675,7 @@ namespace LashStudio.Infrastructure.Migrations
 
                     b.Property<string>("Culture")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullDescription")
                         .HasColumnType("nvarchar(max)");
@@ -784,15 +688,41 @@ namespace LashStudio.Infrastructure.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ServiceId", "Culture")
-                        .IsUnique();
+                    b.HasIndex("ServiceId");
 
-                    b.ToTable("ServiceLocales", (string)null);
+                    b.ToTable("ServiceLocales");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Services.ServiceMedia", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCover")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("MediaAssetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PosterAssetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceMedia");
                 });
 
             modelBuilder.Entity("LashStudio.Domain.Settings.SiteSettingValue", b =>
@@ -1020,8 +950,7 @@ namespace LashStudio.Infrastructure.Migrations
                 {
                     b.HasOne("LashStudio.Domain.Media.MediaAsset", "CoverMedia")
                         .WithMany()
-                        .HasForeignKey("CoverMediaId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("CoverMediaId");
 
                     b.Navigation("CoverMedia");
                 });
@@ -1078,7 +1007,7 @@ namespace LashStudio.Infrastructure.Migrations
                     b.HasOne("LashStudio.Domain.Media.MediaAsset", "MediaAsset")
                         .WithMany("Attachments")
                         .HasForeignKey("MediaAssetId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("MediaAsset");
@@ -1088,6 +1017,17 @@ namespace LashStudio.Infrastructure.Migrations
                 {
                     b.HasOne("LashStudio.Domain.Services.Service", "Service")
                         .WithMany("Locales")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("LashStudio.Domain.Services.ServiceMedia", b =>
+                {
+                    b.HasOne("LashStudio.Domain.Services.Service", "Service")
+                        .WithMany("Media")
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1159,6 +1099,8 @@ namespace LashStudio.Infrastructure.Migrations
             modelBuilder.Entity("LashStudio.Domain.Services.Service", b =>
                 {
                     b.Navigation("Locales");
+
+                    b.Navigation("Media");
                 });
 
             modelBuilder.Entity("LashStudio.Infrastructure.Localization.LocalizationResource", b =>

@@ -7,9 +7,11 @@ using LashStudio.Domain.Faq;
 using LashStudio.Domain.Media;
 using LashStudio.Domain.Services;
 using LashStudio.Domain.Settings;
+using LashStudio.Infrastructure.Config.Services;
 using LashStudio.Infrastructure.Localization;
 using LashStudio.Infrastructure.Logs;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace LashStudio.Infrastructure.Persistence;
 
@@ -27,10 +29,8 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<SiteSettingValue> SiteSettingValues => Set<SiteSettingValue>();
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<CourseLocale> CourseLocales => Set<CourseLocale>();
-    public DbSet<CourseMedia> CourseMedia => Set<CourseMedia>();
     public DbSet<Service> Services => Set<Service>();
     public DbSet<ServiceLocale> ServiceLocales => Set<ServiceLocale>();
-    public DbSet<ServiceMedia> ServiceMedia => Set<ServiceMedia>();
     public DbSet<MediaAttachment> MediaAttachments => Set<MediaAttachment>();
     public DbSet<AboutPage> AboutPages => Set<AboutPage>();
     public DbSet<AboutPageLocale> AboutPageLocales => Set<AboutPageLocale>();
@@ -48,6 +48,8 @@ public class AppDbContext : DbContext, IAppDbContext
 
     protected override void OnModelCreating(ModelBuilder b)
     {
+        b.ApplyConfigurationsFromAssembly(typeof(ServiceConfiguration).Assembly);
+
         b.Entity<Post>(e =>
         {
             e.HasKey(x => x.Id);

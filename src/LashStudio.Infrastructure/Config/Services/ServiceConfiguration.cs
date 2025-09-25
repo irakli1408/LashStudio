@@ -18,12 +18,14 @@ namespace LashStudio.Infrastructure.Config.Services
             b.Property(x => x.Category).HasConversion<short>();
             b.Property(x => x.Variant).HasConversion<short?>();
 
-            b.HasMany(x => x.Locales)
-                .WithOne(x => x.Service)
-                .HasForeignKey(x => x.ServiceId)
-                .OnDelete(DeleteBehavior.Cascade);
+            b.Property(x => x.OwnerKey)
+                .HasColumnType("varchar(36)")
+                .HasComputedColumnSql("LOWER(CONVERT(varchar(36), [Id]))", stored: true);
 
-            b.HasMany(x => x.Media)
+            // Индекс для быстрых коррелированных подзапросов
+            b.HasIndex(x => x.OwnerKey).HasDatabaseName("IX_Services_OwnerKey");
+
+            b.HasMany(x => x.Locales)
                 .WithOne(x => x.Service)
                 .HasForeignKey(x => x.ServiceId)
                 .OnDelete(DeleteBehavior.Cascade);

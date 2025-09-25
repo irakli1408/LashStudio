@@ -6,6 +6,7 @@ using LashStudio.Domain.Faq;
 using LashStudio.Domain.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace LashStudio.Api.Controllers;
 
@@ -15,36 +16,37 @@ public sealed class AdminPublishController : ApiControllerBase
 {
     public AdminPublishController(ISender sender) : base(sender) { }
 
-    // Единая точка: /admin/publish/{entity}/{id}?active=true|false
-    [HttpPut("{entity}/{id:long}")]
-    public async Task<IActionResult> SetActive(string entity, long id, [FromQuery] bool active = true)
+    // единая точка, Swagger без конфликтов
+    [HttpPut("{entity}/{id}")]
+    public async Task<IActionResult> SetActive(string entity, string id, [FromQuery] bool active = true)
     {
         switch (entity.Trim().ToLowerInvariant())
         {
-            case "faq":
-                await Sender.Send(new SetActiveCommand<FaqItem, long>(id, active));
+            case "service":
+            case "services":
+                if (!Guid.TryParse(id, out var serviceId))
+                    return BadRequest(new { error = "invalid_guid" });
+                await Sender.Send(new SetActiveCommand<Service, Guid>(serviceId, active));
                 return NoContent();
 
-                //Раскомментируешь, когда появятся соответствующие сущности
-            // case "service":
-            //case "services":
-            //    await Sender.Send(new SetActiveCommand<Service, Guid>(id, active));
-            //    return NoContent();
-
-            // case "portfolio":
-            //     await Sender.Send(new SetActiveCommand<PortfolioItem, long>(id, active));
-            //     return NoContent();
-
-            //Courses
             case "course":
             case "courses":
-                await Sender.Send(new SetActiveCommand<Course, long>(id, active));
+                if (!long.TryParse(id, NumberStyles.Integer, CultureInfo.InvariantCulture, out var courseId))
+                    return BadRequest(new { error = "invalid_long" });
+                await Sender.Send(new SetActiveCommand<Course, long>(courseId, active));
                 return NoContent();
 
-            // Блог — отдельный флоу (Status/PublishedAt)
+            case "faq":
+                if (!long.TryParse(id, NumberStyles.Integer, CultureInfo.InvariantCulture, out var faqId))
+                    return BadRequest(new { error = "invalid_long" });
+                await Sender.Send(new SetActiveCommand<FaqItem, long>(faqId, active));
+                return NoContent();
+
             case "post":
             case "posts":
-                await Sender.Send(new PublishPostCommand((int)id, active));
+                if (!int.TryParse(id, NumberStyles.Integer, CultureInfo.InvariantCulture, out var postId))
+                    return BadRequest(new { error = "invalid_int" });
+                await Sender.Send(new PublishPostCommand(postId, active));
                 return NoContent();
 
             default:

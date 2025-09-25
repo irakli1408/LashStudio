@@ -29,8 +29,8 @@ namespace LashStudio.Domain.Courses
         public long? CoverMediaId { get; set; }
         public MediaAsset? CoverMedia { get; set; }
 
-        // Галерея
-        public List<CourseMedia> Media { get; set; } = new();
+        public string OwnerKey { get; private set; } = default!;
+
 
         // Локали
         public List<CourseLocale> Locales { get; set; } = new();

@@ -28,8 +28,8 @@ namespace LashStudio.Domain.Services
         public bool IsActive { get; set; } = false;
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
         public DateTime? PublishedAtUtc { get; set; }
+        public string OwnerKey { get; private set; } = default!;
 
         public ICollection<ServiceLocale> Locales { get; set; } = new List<ServiceLocale>();
-        public ICollection<ServiceMedia> Media { get; set; } = new List<ServiceMedia>();
     }
 }

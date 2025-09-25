@@ -4,6 +4,7 @@ using LashStudio.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LashStudio.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250925201108_serviceMediaChanged")]
+    partial class serviceMediaChanged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -427,12 +430,6 @@ namespace LashStudio.Infrastructure.Migrations
                     b.Property<short>("Level")
                         .HasColumnType("smallint");
 
-                    b.Property<string>("OwnerKey")
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("varchar(36)")
-                        .HasComputedColumnSql("LOWER(CONVERT(varchar(36), [Id]))", true);
-
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -452,9 +449,6 @@ namespace LashStudio.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CoverMediaId");
-
-                    b.HasIndex("OwnerKey")
-                        .HasDatabaseName("IX_Courses_OwnerKey");
 
                     b.HasIndex("Slug")
                         .IsUnique();
