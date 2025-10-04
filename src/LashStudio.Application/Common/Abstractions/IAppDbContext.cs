@@ -1,4 +1,5 @@
 ﻿using LashStudio.Domain.AboutPerson;
+using LashStudio.Domain.Auth;
 using LashStudio.Domain.Blog;
 using LashStudio.Domain.Contacts;
 using LashStudio.Domain.Courses;
@@ -49,6 +50,9 @@ public interface IAppDbContext
         DbSet<ContactMessage> ContactMessages { get; }
         DbSet<ContactCta> ContactCtas { get; }
         DbSet<ContactCtaLocale> ContactCtaLocales { get; }
+
+        //Auth
+        DbSet<RefreshToken> RefreshTokens { get; }
 
     // Сохранение изменений
     Task<int> SaveChangesAsync(CancellationToken ct = default);

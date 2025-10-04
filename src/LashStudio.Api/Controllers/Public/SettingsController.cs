@@ -2,6 +2,7 @@
 using LashStudio.Application.Handlers.Admin.Queries.Settings.Read;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace LashStudio.Api.Controllers.Public
 {
@@ -12,6 +13,7 @@ namespace LashStudio.Api.Controllers.Public
         public SettingsController(ISender sender) : base(sender) { }
 
         [HttpGet]
+        [OutputCache(PolicyName = "public-10m-tagged")]
         public Task<List<SettingVm>> Get(string culture)
             => Sender.Send(new GetSiteSettingsQuery(culture));
     }

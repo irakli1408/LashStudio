@@ -2,6 +2,7 @@
 using LashStudio.Application.Handlers.Public.Queries.Contacts.GetContactProfile;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace LashStudio.Api.Controllers.Public
 {
@@ -13,6 +14,7 @@ namespace LashStudio.Api.Controllers.Public
         public PublicContactsController(IMediator m) => _m = m;
 
         [HttpGet]
+        [OutputCache(PolicyName = "public-10m-tagged")]
         [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Client, VaryByHeader = "Accept-Language")]
         public Task<ContactProfileVm> Get([FromQuery] string? culture, CancellationToken ct)
             => _m.Send(new GetContactProfileQuery(culture), ct);

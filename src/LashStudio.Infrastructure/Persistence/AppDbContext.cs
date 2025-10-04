@@ -1,5 +1,6 @@
 ﻿using LashStudio.Application.Common.Abstractions;
 using LashStudio.Domain.AboutPerson;
+using LashStudio.Domain.Auth;
 using LashStudio.Domain.Blog;
 using LashStudio.Domain.Contacts;
 using LashStudio.Domain.Courses;
@@ -10,13 +11,17 @@ using LashStudio.Domain.Settings;
 using LashStudio.Infrastructure.Config.Services;
 using LashStudio.Infrastructure.Localization;
 using LashStudio.Infrastructure.Logs;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace LashStudio.Infrastructure.Persistence;
 
-public class AppDbContext : DbContext, IAppDbContext
+public sealed class AppDbContext
+        : IdentityDbContext<ApplicationUser, IdentityRole<long>, long>, IAppDbContext
 {
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
     public DbSet<Post> Posts => Set<Post>();
     public DbSet<PostLocale> PostLocales => Set<PostLocale>();
     public DbSet<LogEntry> Logs => Set<LogEntry>();
@@ -38,17 +43,26 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<ContactProfileLocale> ContactProfileLocales => Set<ContactProfileLocale>();
     public DbSet<ContactBusinessHour> ContactBusinessHours => Set<ContactBusinessHour>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ContactCta> ContactCtas { get; set; } = default!;
     public DbSet<ContactCtaLocale> ContactCtaLocales { get; set; } = default!;
 
 
     public new DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
 
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder b)
     {
+        base.OnModelCreating(b);
+
         b.ApplyConfigurationsFromAssembly(typeof(ServiceConfiguration).Assembly);
+
+        b.Entity<RefreshToken>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.Token).IsUnique();
+            e.Property(x => x.Token).HasMaxLength(200).IsRequired();
+        });
 
         b.Entity<Post>(e =>
         {
