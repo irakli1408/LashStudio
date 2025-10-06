@@ -1,5 +1,4 @@
-﻿using LashStudio.Application.Contracts.Contacts;
-using MediatR;
+﻿using MediatR;
 
 namespace LashStudio.Application.Handlers.Admin.Commands.Contacts.Upsert
 {
