@@ -1,4 +1,7 @@
-﻿using LashStudio.Application.Handlers.Auth.Command;
+﻿using LashStudio.Application.Common.EmailSender.DTO;
+using LashStudio.Application.Handlers.Admin.Commands.Email.Commands.ForgotPassword;
+using LashStudio.Application.Handlers.Admin.Commands.Email.Commands.ResetPassword;
+using LashStudio.Application.Handlers.Auth.Command;
 using LashStudio.Application.Handlers.Auth.Command.Login;
 using LashStudio.Application.Handlers.Auth.Command.Logout;
 using LashStudio.Application.Handlers.Auth.Command.Refresh;
@@ -39,5 +42,20 @@ namespace LashStudio.Api.Controllers.Auth
         [HttpPost("logout"), Authorize]
         public Task Logout([FromBody] LogoutCommand cmd, CancellationToken ct) => _m.Send(cmd, ct);
 
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Forgot([FromBody] ForgotPasswordDto dto)
+        {
+            await _m.Send(new ForgotPasswordCommand(dto));
+            return Ok(); // всегда 200
+        }
+
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Reset([FromBody] ResetPasswordDto dto)
+        {
+            await _m.Send(new ResetPasswordCommand(dto));
+            return NoContent();
+        }
     }
 }

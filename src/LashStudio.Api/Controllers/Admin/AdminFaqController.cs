@@ -1,8 +1,10 @@
 ﻿using Asp.Versioning;
 using LashStudio.Api.Contracts;
+using LashStudio.Application.Contracts.Faq;
 using LashStudio.Application.Handlers.Admin.Commands.Faq;
 using LashStudio.Application.Handlers.Admin.Commands.Faq.Create;
 using LashStudio.Application.Handlers.Admin.Commands.Faq.Delete;
+using LashStudio.Application.Handlers.Admin.Commands.Faq.Reorder;
 using LashStudio.Application.Handlers.Admin.Commands.Faq.Update;
 using LashStudio.Application.Handlers.Admin.Queries.Faq.Get;
 using LashStudio.Application.Handlers.Admin.Queries.Faq.GetById;
@@ -51,6 +53,13 @@ public sealed class AdminFaqController : ApiControllerBase
     public async Task<IActionResult> Delete(long id)
     {
         await Sender.Send(new DeleteFaqItemCommand(id));
+        return NoContent();
+    }
+
+    [HttpPost("reorder")]
+    public async Task<IActionResult> Reorder([FromBody] IReadOnlyList<FaqSortPairDto> body, CancellationToken ct)
+    {
+        await Sender.Send(new ReorderFaqItemsCommand(body), ct);
         return NoContent();
     }
 }
