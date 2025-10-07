@@ -48,7 +48,7 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
 // DbContext + IAppDbContext
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("LashStudioDB")
-        ?? "Server=.;Database=LashStudio;Trusted_Connection=True;TrustServerCertificate=True"));
+        ?? "Server=DESKTOP-BT4EB20;Database=LashStudio;Trusted_Connection=True;TrustServerCertificate=True"));
 builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
 
 // Time provider / cache / logger

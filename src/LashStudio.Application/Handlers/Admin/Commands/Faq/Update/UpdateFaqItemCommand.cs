@@ -1,11 +1,7 @@
-﻿using MediatR;
+﻿using LashStudio.Application.Contracts.Faq;
+using MediatR;
 
 namespace LashStudio.Application.Handlers.Admin.Commands.Faq.Update
 {
-    public record UpdateFaqItemCommand(
-        long Id,
-        bool? IsActive,
-        int? SortOrder,
-        List<FaqLocaleInput>? Locales
-    ) : IRequest;
+    public sealed record UpdateFaqItemCommand(FaqItemAdminVm Body) : IRequest<FaqItemAdminVm>;
 }

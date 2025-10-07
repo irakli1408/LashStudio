@@ -37,17 +37,10 @@ public sealed class AdminFaqController : ApiControllerBase
         return Created($"/api/v1/{{culture}}/admin/faq/{id}", new { id });
     }
 
-    [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, [FromBody] UpdateFaqDto dto)
-    {
-        await Sender.Send(new UpdateFaqItemCommand(
-            id,
-            dto.IsActive,
-            dto.SortOrder,
-            dto.Locales?.Select(l => new FaqLocaleInput(l.Culture, l.Question, l.Answer)).ToList()
-        ));
-        return NoContent();
-    }
+    [HttpPut]
+    [ProducesResponseType(typeof(FaqItemAdminVm), StatusCodes.Status200OK)]
+    public async Task<ActionResult<FaqItemAdminVm>> Update([FromBody] FaqItemAdminVm body, CancellationToken ct)
+       => Ok(await Sender.Send(new UpdateFaqItemCommand(body), ct));
 
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id)

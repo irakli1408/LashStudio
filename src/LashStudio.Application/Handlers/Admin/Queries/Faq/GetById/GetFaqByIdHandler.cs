@@ -1,4 +1,5 @@
 ﻿using LashStudio.Application.Common.Abstractions;
+using LashStudio.Application.Contracts.Faq;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,10 +13,10 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Faq.GetById
         public async Task<FaqItemAdminVm> Handle(GetFaqByIdQuery q, CancellationToken ct)
         {
             var item = await _db.FaqItems
-                 .AsNoTracking()
-                 .Include(x => x.Locales)
-                 .FirstOrDefaultAsync(x => x.Id == q.Id, ct)
-                 ?? throw new KeyNotFoundException("faq_not_found");
+                .AsNoTracking()
+                .Include(x => x.Locales)
+                .FirstOrDefaultAsync(x => x.Id == q.Id, ct)
+                ?? throw new KeyNotFoundException("faq_not_found");
 
             var locales = item.Locales.AsEnumerable();
 
@@ -26,10 +27,14 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Faq.GetById
             }
 
             return new FaqItemAdminVm(
-                item.Id, item.IsActive, item.SortOrder,
-                locales.OrderBy(l => l.Culture)
-                       .Select(l => new FaqLocaleVm(l.Id, l.Culture, l.Question, l.Answer))
-                       .ToList());
+                item.Id,
+                item.IsActive,
+                item.SortOrder,
+                locales
+                    .OrderBy(l => l.Culture)
+                    .Select(l => new FaqLocaleAdminVm(l.Id, l.Culture, l.Question, l.Answer)) // ← тип заменён
+                    .ToList()
+            );
         }
     }
 }

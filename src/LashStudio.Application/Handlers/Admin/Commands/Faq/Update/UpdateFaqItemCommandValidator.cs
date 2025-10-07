@@ -6,45 +6,14 @@ namespace LashStudio.Application.Handlers.Admin.Commands.Faq.Update
     {
         public UpdateFaqItemCommandValidator()
         {
-            // Обязателен валидный PK
-            RuleFor(x => x.Id)
-                .GreaterThan(0)
-                .WithMessage("Id must be greater than 0.");
+            RuleFor(x => x.Body.Id).GreaterThan(0);
+            RuleFor(x => x.Body.Locales).NotEmpty();
 
-            // SortOrder: если передан — неотрицательный
-            When(x => x.SortOrder.HasValue, () =>
+            RuleForEach(x => x.Body.Locales).ChildRules(v =>
             {
-                RuleFor(x => x.SortOrder!.Value)
-                    .GreaterThanOrEqualTo(0)
-                    .WithMessage("SortOrder must be >= 0.");
-            });
-
-            // Locales: если переданы — не пустые и без дубликатов культур
-            When(x => x.Locales is not null, () =>
-            {
-                RuleFor(x => x.Locales!)
-                    .Must(l => l.Count > 0)
-                    .WithMessage("Locales must not be empty when provided.")
-                    .Must(l => l.Select(i => i.Culture?.Trim())
-                                .Distinct()
-                                .Count() == l.Count)
-                    .WithMessage("Locales must have unique cultures.");
-
-                // Для каждой локали — минимально обязательные поля
-                RuleForEach(x => x.Locales!).ChildRules(loc =>
-                {
-                    loc.RuleFor(v => v.Culture)
-                        .NotEmpty()
-                        .WithMessage("Culture is required.");
-
-                    loc.RuleFor(v => v.Question)
-                        .NotEmpty()
-                        .WithMessage("Question is required.");
-
-                    loc.RuleFor(v => v.Answer)
-                        .NotEmpty()
-                        .WithMessage("Answer is required.");
-                });
+                v.RuleFor(l => l.Culture).NotEmpty().MaximumLength(10);
+                v.RuleFor(l => l.Question).NotEmpty().MaximumLength(500);
+                v.RuleFor(l => l.Answer).NotEmpty().MaximumLength(4000);
             });
         }
     }
