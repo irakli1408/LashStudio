@@ -24,4 +24,19 @@
     <Folder Include="Handlers\Public\Commands\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Common\Localization\Resouresec\ResetPasswordEmailResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResetPasswordEmailResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Common\Localization\Resouresec\ResetPasswordEmailResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResetPasswordEmailResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

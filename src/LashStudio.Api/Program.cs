@@ -58,6 +58,7 @@ builder.Services.AddSingleton<IAppCache, MemoryAppCache>();
 builder.Services.AddSingleton<IDateTime, SystemDateTime>();
 builder.Services.AddScoped<IErrorLogger, ErrorLogger>();
 
+builder.Services.AddLocalization(o => o.ResourcesPath = "Resources");
 
 
 // CORS (dev-only) — разрешаем любые loopback-хосты (localhost, 127.0.0.1) на любых портах

@@ -1,4 +1,6 @@
-﻿using LashStudio.Application.Common.Abstractions;
+﻿using System.Globalization;
+using LashStudio.Application.Common.Abstractions;
+using LashStudio.Application.Common.Localization.Resouresec; // ResetPasswordEmailResources
 using LashStudio.Domain.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -9,13 +11,18 @@ namespace LashStudio.Application.Handlers.Admin.Commands.Email.Commands.ForgotPa
     {
         private readonly UserManager<ApplicationUser> _um;
         private readonly IEmailSender _email;
-        public ForgotPasswordHandler(UserManager<ApplicationUser> um, IEmailSender email)
-            => (_um, _email) = (um, email);
+        private readonly ICurrentStateService _css;
+
+        public ForgotPasswordHandler(
+            UserManager<ApplicationUser> um,
+            IEmailSender email,
+            ICurrentStateService css)
+            => (_um, _email, _css) = (um, email, css);
 
         public async Task Handle(ForgotPasswordCommand r, CancellationToken ct)
         {
             var key = r.Dto.EmailOrUsername?.Trim();
-            if (string.IsNullOrEmpty(key)) return;
+            if (string.IsNullOrWhiteSpace(key)) return;
 
             var user = await _um.FindByEmailAsync(key) ?? await _um.FindByNameAsync(key);
             if (user is null) return; // не раскрываем существование
@@ -26,16 +33,23 @@ namespace LashStudio.Application.Handlers.Admin.Commands.Email.Commands.ForgotPa
                 ? "https://lashschool.example/reset-password"
                 : r.Dto.RedirectBaseUrl!.TrimEnd('/');
 
-            var link = $"{baseUrl}?uid={user.Id}&token={Uri.EscapeDataString(token)}";
+            var link = $"{baseUrl}?uid={Uri.EscapeDataString(user.Id.ToString())}&toke{Uri.EscapeDataString(token)}";
 
-            var html = $@"
-                <h3>Сброс пароля</h3>
-                <p>Нажмите кнопку, чтобы установить новый пароль:</p>
-                <p><a href=""{link}"" style=""display:inline-block;padding:10px 16px;border-radius:8px;text-decoration:none"">
-                Сбросить пароль</a></p>
-                <p>Если вы не запрашивали сброс — игнорируйте это письмо.</p>";
+            // Культура только из CurrentState; fallback — en
+            var cultureName = _css?.CurrentCulture ?? CultureInfo.CurrentUICulture?.Name ?? "en";
+            CultureInfo culture;
+            try { culture = new CultureInfo(cultureName); } catch { culture = new CultureInfo("en"); }
 
-            await _email.SendAsync(user.Email!, "Reset your password", html, ct);
+            // Тело письма из ресурсов + подстановка {Link}; fallback на базовый ресурс
+            var htmlTpl = ResetPasswordEmailResources.ResourceManager.GetString("ResetPassword", culture)
+                        ?? ResetPasswordEmailResources.ResetPassword;
+
+            var html = htmlTpl.Replace("{Link}", link);
+
+            // Фиксированная тема (без ресурсов)
+            const string subject = "Reset your password";
+
+            await _email.SendAsync(user.Email!, subject, html, ct);
         }
     }
 }

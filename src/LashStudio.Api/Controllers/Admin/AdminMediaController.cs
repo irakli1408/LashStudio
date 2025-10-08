@@ -79,8 +79,6 @@ public sealed class AdminMediaController : ApiControllerBase
         CancellationToken ct = default)
         => Sender.Send(new GetTrashMediaAssetsQuery(skip, take, search, type, extension, deletedFromUtc, deletedToUtc, orderBy), ct);
 
-
-
 // ↓↓↓ ключевые изменения — ownerKey:string без :long
 
 [HttpPost("{ownerType}/{ownerKey}/{assetId:long}/attach")]
