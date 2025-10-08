@@ -5,6 +5,7 @@ using LashStudio.Application.Handlers.Admin.Commands.Media.Delete;
 using LashStudio.Application.Handlers.Admin.Commands.Media.Restore;
 using LashStudio.Application.Handlers.Admin.Commands.Media.Trash;
 using LashStudio.Application.Handlers.Admin.Commands.Media.Upload;
+using LashStudio.Application.Handlers.Admin.Queries.Media.GetMediaLibrary;
 using LashStudio.Application.Handlers.Common.Commands.Media.AttachMedia;
 using LashStudio.Application.Handlers.Common.Commands.Media.DetachMedia;
 using LashStudio.Application.Handlers.Common.Commands.Media.ReorderMedia;
@@ -117,4 +118,11 @@ public sealed class AdminMediaController : ApiControllerBase
     [HttpGet("{ownerType}/{ownerKey}")]
     public Task<IReadOnlyList<MediaAttachment>> List(MediaOwnerType ownerType, string ownerKey, CancellationToken ct)
         => Sender.Send(new ListMediaQuery(ownerType, ownerKey), ct);
+
+    [HttpGet("library")]
+    public async Task<IActionResult> GetLibrary(CancellationToken ct)
+    {
+        var vm = await Sender.Send(new GetMediaLibraryQuery(), ct);
+        return Ok(vm);
+    }
 }

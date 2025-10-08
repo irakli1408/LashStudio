@@ -15,4 +15,16 @@ namespace LashStudio.Application.Contracts.Media
     DateTime? DeletedAtUtc,
     int AttachmentsCount
 );
+
+    public sealed record MediaItemVm(
+        long AssetId,
+        string? Name,
+        string MediaType   // "image" | "video"
+    );
+
+    public sealed record MediaLibraryVm(
+        //IReadOnlyList<MediaItemVm> All,
+        IReadOnlyList<MediaItemVm> Photos,
+        IReadOnlyList<MediaItemVm> Videos
+    );
 }
