@@ -28,6 +28,8 @@ public sealed class AdminMediaController : ApiControllerBase
 
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
+    [RequestSizeLimit(2L * 1024 * 1024 * 1024)]
+    [RequestFormLimits(MultipartBodyLengthLimit = 2L * 1024 * 1024 * 1024)]
     public async Task<IActionResult> Upload(
         [FromQuery(Name = "mediaTypes")] string type,  // ← имя из Swagger
         IFormFile file,
