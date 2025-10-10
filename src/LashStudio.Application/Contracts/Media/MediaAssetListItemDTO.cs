@@ -19,7 +19,8 @@ namespace LashStudio.Application.Contracts.Media
     public sealed record MediaItemVm(
         long AssetId,
         string? Name,
-        string MediaType   // "image" | "video"
+        string MediaType,  // "image" | "video"
+        string Url
     );
 
     public sealed record MediaLibraryVm(
