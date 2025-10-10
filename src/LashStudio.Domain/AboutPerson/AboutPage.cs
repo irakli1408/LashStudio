@@ -1,6 +1,8 @@
-﻿namespace LashStudio.Domain.AboutPerson
+﻿using LashStudio.Domain.Abstractions;
+
+namespace LashStudio.Domain.AboutPerson
 {
-    public sealed class AboutPage
+    public sealed class AboutPage : IActivatable, IHasId<long>
     {
         public long Id { get; set; }                         // long IDENTITY
         public bool IsActive { get; set; }
