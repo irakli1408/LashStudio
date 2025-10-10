@@ -28,10 +28,19 @@ public sealed class AdminMediaController : ApiControllerBase
 
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Upload([FromQuery] string mediaTypes, IFormFile file, CancellationToken ct)
+    public async Task<IActionResult> Upload(
+        [FromQuery(Name = "mediaTypes")] string type,  // ← имя из Swagger
+        IFormFile file,
+        CancellationToken ct)
     {
-        if (file is null) return BadRequest(new { error = "file_required" });
-        var mediaType = mediaTypes?.ToLowerInvariant() == "video" ? MediaType.Video : MediaType.Photo;
+        if (file is null || file.Length == 0)
+            return BadRequest(new { error = "file_required" });
+
+        MediaType mediaType = MediaType.Photo; // default
+        if (int.TryParse(type, out var n) && Enum.IsDefined(typeof(MediaType), n))
+            mediaType = (MediaType)n;
+        else if (string.Equals(type, "video", StringComparison.OrdinalIgnoreCase))
+            mediaType = MediaType.Video;
 
         await using var stream = file.OpenReadStream();
         var res = await Sender.Send(new UploadMediaCommand(
