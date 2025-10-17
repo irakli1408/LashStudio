@@ -5,6 +5,8 @@ using LashStudio.Application.Handlers.Admin.Commands.Posts.Create;
 using LashStudio.Application.Handlers.Admin.Commands.Posts.Delete;
 using LashStudio.Application.Handlers.Admin.Commands.Posts.Update;
 using LashStudio.Application.Handlers.Admin.Queries.Posts;
+using LashStudio.Application.Handlers.Admin.Queries.Posts.GetList;
+using LashStudio.Application.Handlers.Public.Queries.Blog.GetBlogs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +21,22 @@ namespace LashStudio.Api.Controllers.Admin
         [HttpGet("{id:int}")]
         public Task<PostAdminVm> GetById(int id)
          => Sender.Send(new GetPostByIdQuery(id));
+
+        [HttpGet]
+        public Task<PagedResult<AdminPostListItemVm>> GetList(
+     [FromRoute] string culture,
+     [FromQuery] GetAdminPostListQueryParams q)
+        {
+            var req = new GetAdminPostListQuery(culture)
+            {
+                IsPublished = q.IsPublished,
+                Page = q.Page,
+                PageSize = q.PageSize,
+                Search = q.Search,
+                Sort = q.Sort
+            };
+            return Sender.Send(req);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePostDto dto)
