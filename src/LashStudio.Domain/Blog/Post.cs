@@ -1,12 +1,14 @@
-﻿using LashStudio.Domain.Media;
+﻿using LashStudio.Domain.Abstractions;
+using LashStudio.Domain.Media;
 
 namespace LashStudio.Domain.Blog;
 
 public enum PostStatus { Draft = 0, Published = 1 }
 
-public class Post
+public class Post : IActivatable
 {
     public int Id { get; set; }
+    public bool IsActive { get; set; } = false;
     public string SlugDefault { get; set; } = string.Empty;
     public PostStatus Status { get; set; } = PostStatus.Draft;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
