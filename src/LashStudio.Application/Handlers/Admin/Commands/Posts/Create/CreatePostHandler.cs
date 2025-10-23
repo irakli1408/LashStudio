@@ -5,6 +5,7 @@ using LashStudio.Domain.Blog;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using static System.Net.WebRequestMethods;
 
 public sealed class CreatePostHandler : IRequestHandler<CreatePostCommand, long>
 {
@@ -40,7 +41,8 @@ public sealed class CreatePostHandler : IRequestHandler<CreatePostCommand, long>
         var post = new Post
         {
             SlugDefault = combos[0].Slug,  // первый slug используем как дефолт
-            CoverMediaId = c.CoverMediaId
+            CoverMediaId = c.CoverMediaId,
+            IsActive = c.IsActive            
         };
 
         // добавляем локализации

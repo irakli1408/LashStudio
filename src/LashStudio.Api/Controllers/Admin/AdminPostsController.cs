@@ -43,7 +43,8 @@ namespace LashStudio.Api.Controllers.Admin
         {
             var id = await Sender.Send(new CreatePostCommand(
                 dto.Locales.Select(l => new PostLocaleInput(l.Culture, l.Title, l.Slug, l.Content)).ToList(),
-                dto.CoverMediaId));
+                dto.CoverMediaId,
+                dto.IsActive));
 
             return Created($"/api/v1/{{culture}}/admin/posts/{id}", new { id });
         }
