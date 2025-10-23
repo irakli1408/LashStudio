@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using LashStudio.Api.Helper.Model;
 using LashStudio.Api.Localization;
 using LashStudio.Api.Middleware;
 using LashStudio.Application.Common.Abstractions;
@@ -102,7 +103,11 @@ builder.Services.AddCors(opt =>
 });
 
 
-
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    // Всегда сериализовать DateTime в UTC с суффиксом Z
+    options.SerializerOptions.Converters.Add(new JsonConverterDateTimeUtc());
+});
 
 
 // Identity (one registration — ensure ApplicationUser is your Identity user)
@@ -174,8 +179,18 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(LashS
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(LashStudio.Application.Handlers.Admin.Commands.Media.Upload.UploadMediaHandler).Assembly));
 
 // Controllers / JSON
-builder.Services.AddControllers().AddJsonOptions(o =>
-    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+//builder.Services.AddControllers().AddJsonOptions(o =>
+//    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Добавляем наш кастомный конвертер
+        options.JsonSerializerOptions.Converters.Add(new JsonConverterNullableDateTimeUtc());
+        options.JsonSerializerOptions.Converters.Add(new JsonConverterDateTimeUtc());
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+    });
 
 // API Versioning
 builder.Services.AddApiVersioning(o =>
