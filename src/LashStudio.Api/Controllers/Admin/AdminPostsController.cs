@@ -29,7 +29,7 @@ namespace LashStudio.Api.Controllers.Admin
         {
             var req = new GetAdminPostListQuery(culture)
             {
-                IsPublished = q.IsPublished,
+                IsActive = q.IsActive,
                 Page = q.Page,
                 PageSize = q.PageSize,
                 Search = q.Search,
