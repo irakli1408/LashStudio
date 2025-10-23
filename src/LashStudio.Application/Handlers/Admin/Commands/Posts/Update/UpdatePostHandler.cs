@@ -19,6 +19,7 @@ namespace LashStudio.Application.Handlers.Admin.Commands.Posts.Update
 
             // обложка
             post.CoverMediaId = c.CoverMediaId;
+            post.IsActive = c.IsActive;
 
             // upsert локалей (обновляем/добавляем, НЕ удаляем отсутствующие)
             foreach (var li in c.Locales)
