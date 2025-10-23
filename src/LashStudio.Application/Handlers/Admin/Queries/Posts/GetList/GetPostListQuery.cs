@@ -8,6 +8,7 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Posts.GetList
 
     public sealed record AdminPostListItemVm(
         int Id,
+        bool IsActive,
         string Status,
         DateTime CreatedAt,
         DateTime? PublishedAt,
@@ -20,6 +21,7 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Posts.GetList
     public record GetAdminPostListQueryParams
     {
         public bool? IsPublished { get; init; }
+        public bool IsActive { get; init; }
         public int Page { get; init; } = 1;
         public int PageSize { get; init; } = 20;
         public string? Search { get; init; }

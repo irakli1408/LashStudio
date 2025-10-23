@@ -27,8 +27,8 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Posts.GetList
 
             var baseQ = _db.Posts.AsNoTracking();
 
-            if (q.IsPublished is not null)
-                baseQ = baseQ.Where(p => (p.Status == PostStatus.Published) == q.IsPublished);
+            if (q.IsActive != false)
+                baseQ = baseQ.Where(p => (p.Status == PostStatus.Published));
 
             if (!string.IsNullOrWhiteSpace(q.Search))
             {
@@ -58,6 +58,7 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Posts.GetList
                 .Select(p => new
                 {
                     p.Id,
+                    p.IsActive,
                     Status = p.Status.ToString(),
                     p.CreatedAt,
                     p.PublishedAt,
@@ -71,6 +72,7 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Posts.GetList
 
             var items = rows.Select(x => new AdminPostListItemVm(
                 x.Id,
+                x.IsActive,
                 x.Status,
                 x.CreatedAt,
                 x.PublishedAt,
