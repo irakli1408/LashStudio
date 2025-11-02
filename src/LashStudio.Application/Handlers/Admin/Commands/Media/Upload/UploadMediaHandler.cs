@@ -44,8 +44,9 @@ namespace LashStudio.Application.Handlers.Admin.Commands.Media.Upload
             _db.MediaAssets.Add(asset);
             await _db.SaveChangesAsync(ct);
 
-            var publicUrl = $"{_opt.RequestPath}/{relPath}".Replace("//", "/").Replace("\\", "/");
-            return new UploadMediaResult(asset.Id, asset.Type, relPath, publicUrl);
+            var Url = $"{_opt.RequestPath.TrimEnd('/')}/{relPath}".Replace("//", "/").Replace("\\", "/");
+
+            return new UploadMediaResult(asset.Id, asset.OriginalFileName, (int)asset.Type, Url);
         }
     }
 }

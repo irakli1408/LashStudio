@@ -48,7 +48,7 @@ public sealed class AdminMediaController : ApiControllerBase
         var res = await Sender.Send(new UploadMediaCommand(
             mediaType, file.FileName, file.ContentType, file.Length, stream), ct);
 
-        return Created(res.PublicUrl, res);
+        return Created(res.Url, res);
     }
 
     [HttpDelete("{assetId:long}/trash")]

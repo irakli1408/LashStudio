@@ -11,5 +11,5 @@ namespace LashStudio.Application.Handlers.Admin.Commands.Media.Upload
      Stream File
  ) : IRequest<UploadMediaResult>;
 
-    public record UploadMediaResult(long Id, MediaType Type, string RelativePath, string PublicUrl);
+    public record UploadMediaResult(long AssetId, string? Name, int MediaType, string Url);
 }
