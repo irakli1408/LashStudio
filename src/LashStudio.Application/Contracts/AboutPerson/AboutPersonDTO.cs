@@ -19,7 +19,6 @@
     public sealed record AboutAdminDto(
         long Id,
         bool IsActive,
-        bool IsCover,
         DateTime CreatedAtUtc,
         DateTime? PublishedAtUtc,
         string? SeoTitle,
@@ -31,10 +30,10 @@
 
     public sealed record AboutUpsertCommandDto(
         bool IsActive,
-        bool IsCover,
         string? SeoTitle,
         string? SeoDescription,
         string? SeoKeywordsCsv,
         List<AboutLocaleDto> Locales);
 
 }
+

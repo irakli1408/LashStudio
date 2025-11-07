@@ -52,7 +52,6 @@ namespace LashStudio.Application.Handlers.Admin.Queries.AboutPerson
             return new AboutAdminDto(
                 about.Id,
                 about.IsActive,
-                about.IsCover,
                 about.CreatedAtUtc,
                 about.PublishedAtUtc,
                 about.SeoTitle,
