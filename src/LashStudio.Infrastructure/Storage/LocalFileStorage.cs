@@ -1,5 +1,6 @@
 ﻿using LashStudio.Application.Common.Abstractions;
 using LashStudio.Application.Common.Options;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;       
 using Microsoft.Extensions.Options;
 
@@ -33,6 +34,11 @@ public sealed class LocalFileStorage : IFileStorage
         await file.CopyToAsync(outStream, ct);
 
         return Path.Combine(subfolder, fileName).Replace('\\', '/');
+    }
+    public async Task<string> SaveAsync(IFormFile file, string subfolder, string fileName, CancellationToken ct)
+    {
+        using var s = file.OpenReadStream();
+        return await SaveAsync(s, subfolder, fileName, ct);
     }
 
     public Task DeleteAsync(string subpath, CancellationToken ct = default)

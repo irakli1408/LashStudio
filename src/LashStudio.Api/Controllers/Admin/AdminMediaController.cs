@@ -31,25 +31,30 @@ public sealed class AdminMediaController : ApiControllerBase
     [RequestSizeLimit(2L * 1024 * 1024 * 1024)]
     [RequestFormLimits(MultipartBodyLengthLimit = 2L * 1024 * 1024 * 1024)]
     public async Task<IActionResult> Upload(
-        [FromQuery(Name = "mediaTypes")] string type,  // ← имя из Swagger
-        IFormFile file,
-        CancellationToken ct)
+     [FromQuery(Name = "mediaTypes")] string type,
+     IFormFile file,
+     CancellationToken ct)
     {
         if (file is null || file.Length == 0)
             return BadRequest(new { error = "file_required" });
 
-        MediaType mediaType = MediaType.Photo; // default
+        MediaType mediaType = MediaType.Photo;
         if (int.TryParse(type, out var n) && Enum.IsDefined(typeof(MediaType), n))
             mediaType = (MediaType)n;
         else if (string.Equals(type, "video", StringComparison.OrdinalIgnoreCase))
             mediaType = MediaType.Video;
 
-        await using var stream = file.OpenReadStream();
         var res = await Sender.Send(new UploadMediaCommand(
-            mediaType, file.FileName, file.ContentType, file.Length, stream), ct);
+            mediaType,
+            file.FileName,
+            file.ContentType,
+            file.Length,
+            file            // ✅ передаём IFormFile
+        ), ct);
 
         return Created(res.Url, res);
     }
+
 
     [HttpDelete("{assetId:long}/trash")]
     public Task Trash(long assetId, CancellationToken ct)

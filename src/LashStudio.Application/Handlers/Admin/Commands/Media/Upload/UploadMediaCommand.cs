@@ -1,5 +1,6 @@
 ﻿using LashStudio.Domain.Media;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace LashStudio.Application.Handlers.Admin.Commands.Media.Upload
 {
@@ -8,8 +9,8 @@ namespace LashStudio.Application.Handlers.Admin.Commands.Media.Upload
      string FileName,
      string ContentType,
      long Length,
-     Stream File
+     IFormFile File   
  ) : IRequest<UploadMediaResult>;
 
-    public record UploadMediaResult(long AssetId, string? Name, int MediaType, string Url);
+    public record UploadMediaResult(long AssetId, string? Name, int MediaType, string Url, string? ThumbUrl);
 }

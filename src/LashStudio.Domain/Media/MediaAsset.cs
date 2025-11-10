@@ -18,6 +18,11 @@ public class MediaAsset
 
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 
+    // ► Новые поля для превью (thumbnail)
+    public string? ThumbStoredPath { get; set; }     // yyyy/MM/000_guid_thumb.ext
+    public int? ThumbWidth { get; set; }
+    public int? ThumbHeight { get; set; }
+
     public string? Extension { get; set; }           // ".jpg" / ".mp4" (нормализовано)
     public string? HashSha256 { get; set; }
 

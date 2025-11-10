@@ -12,7 +12,7 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Media.GetMediaLibrary
     {
         private readonly IAppDbContext _db;
         private readonly IOptions<MediaOptions> _opt;
-        private readonly IMediaUrlBuilder _urlBuilder;
+        private readonly IMediaUrlBuilder _urlBuilder; // остаётся на будущее, если используешь CDN
 
         public GetMediaLibraryHandler(
             IAppDbContext db,
@@ -22,7 +22,7 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Media.GetMediaLibrary
 
         public async Task<MediaLibraryVm> Handle(GetMediaLibraryQuery q, CancellationToken ct)
         {
-            // 1) Только то, что переводится в SQL — тянем enum из БД, НЕ строку
+            // 1) Берём только то, что переводится в SQL
             var raw = await _db.MediaAssets
                 .AsNoTracking()
                 .Where(m => !m.IsDeleted)
@@ -31,18 +31,25 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Media.GetMediaLibrary
                 {
                     m.Id,
                     m.OriginalFileName,
-                    m.Type,        
-                    m.StoredPath
+                    m.Type,
+                    m.StoredPath,
+                    m.ThumbStoredPath // ← добавлено
                 })
                 .ToListAsync(ct);
 
-            // 2) Формируем VM уже в памяти (тут можно безопасно вызывать UrlBuilder)
+            // 2) Маппинг в VM в памяти
+            string ToUrl(string rel)
+                => $"{_opt.Value.RequestPath.TrimEnd('/')}/{rel}"
+                    .Replace("//", "/")
+                    .Replace("\\", "/");
+
             var items = raw.Select(r => new MediaItemVm(
                 AssetId: r.Id,
                 Name: r.OriginalFileName,
-                MediaType: (int)r.Type,                 
-                Url: $"{_opt.Value.RequestPath.TrimEnd('/')}/{r.StoredPath}"
-                          .Replace("//", "/").Replace("\\", "/"))).ToList();
+                MediaType: (int)r.Type,
+                Url: ToUrl(r.StoredPath),
+                ThumbUrl: r.ThumbStoredPath is null ? null : ToUrl(r.ThumbStoredPath)
+            )).ToList();
 
             var photos = items.Where(x => x.MediaType == (int)MediaType.Photo).ToList();
             var videos = items.Where(x => x.MediaType == (int)MediaType.Video).ToList();
