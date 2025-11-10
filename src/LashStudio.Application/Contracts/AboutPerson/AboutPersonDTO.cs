@@ -21,19 +21,12 @@
         bool IsActive,
         DateTime CreatedAtUtc,
         DateTime? PublishedAtUtc,
-        string? SeoTitle,
-        string? SeoDescription,
-        string? SeoKeywordsCsv,
         List<AboutLocaleDto> Locales,
         List<AboutMediaVm> Media       // ← добавили
     );
 
     public sealed record AboutUpsertCommandDto(
         bool IsActive,
-        string? SeoTitle,
-        string? SeoDescription,
-        string? SeoKeywordsCsv,
         List<AboutLocaleDto> Locales);
-
 }
 

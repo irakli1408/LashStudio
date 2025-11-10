@@ -29,10 +29,7 @@ namespace LashStudio.Application.Handlers.Admin.Commands.AboutPerson.Upsert
                 {
                     IsActive = model.IsActive,
                     CreatedAtUtc = now,
-                    PublishedAtUtc = model.IsActive ? now : null,
-                    SeoTitle = model.SeoTitle,
-                    SeoDescription = model.SeoDescription,
-                    SeoKeywordsCsv = model.SeoKeywordsCsv
+                    PublishedAtUtc = model.IsActive ? now : null
                 };
 
                 foreach (var locale in model.Locales)
@@ -55,9 +52,6 @@ namespace LashStudio.Application.Handlers.Admin.Commands.AboutPerson.Upsert
             var wasActive = aboutPage.IsActive;
 
             aboutPage.IsActive = model.IsActive;
-            aboutPage.SeoTitle = model.SeoTitle;
-            aboutPage.SeoDescription = model.SeoDescription;
-            aboutPage.SeoKeywordsCsv = model.SeoKeywordsCsv;
 
             if (!wasActive && model.IsActive && aboutPage.PublishedAtUtc is null)
                 aboutPage.PublishedAtUtc = now;

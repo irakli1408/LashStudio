@@ -54,9 +54,6 @@ namespace LashStudio.Application.Handlers.Admin.Queries.AboutPerson
                 about.IsActive,
                 about.CreatedAtUtc,
                 about.PublishedAtUtc,
-                about.SeoTitle,
-                about.SeoDescription,
-                about.SeoKeywordsCsv,
                 locales,
                 media
             );
