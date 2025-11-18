@@ -48,9 +48,17 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdmin
                     x.Title,
                     x.Price,
                     _db.MediaAttachments
-                        .Where(a => a.OwnerType == MediaOwnerType.Service && a.OwnerKey == x.OwnerKey)
-                        .OrderBy(a => a.SortOrder)
-                        .Select(a => new ServiceMediaVm(a.MediaAssetId, a.SortOrder, a.IsCover, null))
+                        .Where(m => m.OwnerType == MediaOwnerType.Service && m.OwnerKey == x.OwnerKey)
+                        .OrderBy(m => m.SortOrder)
+                        .Select(m => new ServiceMediaVm(
+                            m.MediaAssetId, // mediaAssetId
+                            null,           // url  (как в About; можно позже собрать через MediaAsset + IMediaUrlBuilder)
+                            null,           // thumbUrl
+                            null,           // contentType
+                            m.SortOrder,    // sortOrder
+                            m.IsCover,      // isCover
+                            m.CreatedAtUtc  // createdAtUtc
+                        ))
                         .ToList()
                 ))
                 .ToListAsync(ct);

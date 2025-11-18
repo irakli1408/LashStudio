@@ -5,7 +5,14 @@ namespace LashStudio.Application.Contracts.Services
     public record ServiceLocaleDto(string Culture, string Title, string? ShortDescription, string? FullDescription);
 
     // было Guid → стало long
-    public record ServiceMediaVm(long MediaAssetId, int SortOrder, bool IsCover, long? PosterAssetId);
+    public record ServiceMediaVm(
+        long MediaAssetId,
+        string? Url,             // если у тебя есть таблица Asset c путями
+        string? ThumbUrl,        // миниатюра, если генерируешь
+        string? ContentType,     // image/jpeg, video/mp4 ...
+        int SortOrder,
+        bool IsCover,
+        DateTime CreatedAtUtc);
 
     // было Guid? → стало long?
     public record ServiceAdminDto(

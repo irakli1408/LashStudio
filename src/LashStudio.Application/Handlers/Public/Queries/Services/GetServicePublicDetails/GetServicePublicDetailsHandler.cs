@@ -58,10 +58,13 @@ namespace LashStudio.Application.Handlers.Public.Queries.Services.GetServicePubl
                 .Where(a => a.OwnerType == MediaOwnerType.Service && a.OwnerKey == ownerKey)
                 .OrderBy(a => a.SortOrder)
                 .Select(a => new ServiceMediaVm(
-                    a.MediaAssetId,      // long
-                    a.SortOrder,
-                    a.IsCover,
-                    null                 // PosterAssetId: long? — если постер не храните отдельно
+                    a.MediaAssetId,   // mediaAssetId
+                    null,             // url (позже можно добавить через MediaAsset + UrlBuilder)
+                    null,             // thumbUrl
+                    null,             // contentType
+                    a.SortOrder,      // sortOrder
+                    a.IsCover,        // isCover
+                    a.CreatedAtUtc               // PosterAssetId: long? — если постер не храните отдельно
                 ))
                 .ToListAsync(ct);
 
