@@ -1,29 +1,43 @@
 ﻿using LashStudio.Application.Common.Abstractions;
+using LashStudio.Application.Common.Options;
 using LashStudio.Application.Contracts.Services;
 using LashStudio.Domain.Media;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdminList
 {
     public sealed class GetServiceAdminListHandler
-    : IRequestHandler<GetServiceAdminListQuery, List<ServiceListItemWithMediaVm>>
+        : IRequestHandler<GetServiceAdminListQuery, List<ServiceListItemWithMediaVm>>
     {
         private readonly IAppDbContext _db;
+        private readonly IOptions<MediaOptions> _opt;
         private readonly ICurrentStateService _state;
 
-        public GetServiceAdminListHandler(IAppDbContext db, ICurrentStateService state)
+        public GetServiceAdminListHandler(
+            IAppDbContext db,
+            ICurrentStateService state,
+            IOptions<MediaOptions> opt)
         {
             _db = db;
             _state = state;
+            _opt = opt;
         }
 
-        public async Task<List<ServiceListItemWithMediaVm>> Handle(GetServiceAdminListQuery q, CancellationToken ct)
+        public async Task<List<ServiceListItemWithMediaVm>> Handle(
+            GetServiceAdminListQuery q,
+            CancellationToken ct)
         {
             var culture = _state.CurrentCulture;
-            var neutral = !string.IsNullOrEmpty(culture) && culture.Length >= 2 ? culture[..2] : null;
+            var neutral = !string.IsNullOrEmpty(culture) && culture.Length >= 2
+                ? culture[..2]
+                : null;
 
-            var baseQuery = _db.Services.AsNoTracking()
+            // базовый запрос по сервисам
+            var baseQuery = _db.Services
+                .AsNoTracking()
                 .Where(s => !q.Category.HasValue || s.Category == q.Category)
                 .Select(s => new
                 {
@@ -41,27 +55,59 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdmin
 
             var ordered = baseQuery.OrderBy(x => x.Title);
 
-            return await ordered
-                .Select(x => new ServiceListItemWithMediaVm(
+            // 1) Забираем из БД "сырые" данные (без ToUrl)
+            var raw = await ordered
+                .Select(x => new
+                {
                     x.Id,
                     x.Slug,
                     x.Title,
                     x.Price,
-                    _db.MediaAttachments
+                    Media = _db.MediaAttachments
                         .Where(m => m.OwnerType == MediaOwnerType.Service && m.OwnerKey == x.OwnerKey)
                         .OrderBy(m => m.SortOrder)
-                        .Select(m => new ServiceMediaVm(
-                            m.MediaAssetId, // mediaAssetId
-                            null,           // url  (как в About; можно позже собрать через MediaAsset + IMediaUrlBuilder)
-                            null,           // thumbUrl
-                            null,           // contentType
-                            m.SortOrder,    // sortOrder
-                            m.IsCover,      // isCover
-                            m.CreatedAtUtc  // createdAtUtc
-                        ))
+                        .Select(m => new
+                        {
+                            m.MediaAssetId,
+                            m.MediaAsset.StoredPath,
+                            m.MediaAsset.ThumbStoredPath,
+                            Type = (int)m.MediaAsset.Type,
+                            m.SortOrder,
+                            m.IsCover,
+                            m.CreatedAtUtc
+                        })
                         .ToList()
-                ))
+                })
                 .ToListAsync(ct);
+
+            // локальная функция — уже для LINQ to Objects
+            string ToUrl(string rel)
+                => $"{_opt.Value.RequestPath.TrimEnd('/')}/{rel}"
+                    .Replace("//", "/")
+                    .Replace("\\", "/");
+
+            // 2) В памяти мапим в итоговые VM и прогоняем через ToUrl
+            var result = raw
+             .Select(x => new ServiceListItemWithMediaVm(
+                 x.Id,
+                 x.Slug,
+                 x.Title,
+                 x.Price,
+                 x.Media
+                     .Select(m => new ServiceMediaVm(
+                         m.MediaAssetId,                                       // mediaAssetId
+                         ToUrl(m.StoredPath),                                  // url
+                         m.ThumbStoredPath is null ? null : ToUrl(m.ThumbStoredPath), // thumbUrl (может быть null)
+                         (MediaType)m.Type,                                    // contentType / type
+                         m.SortOrder,                                          // sortOrder
+                         m.IsCover,                                            // isCover
+                         m.CreatedAtUtc                                        // createdAtUtc
+                     ))
+                     .ToList()
+             ))
+             .ToList();
+
+            return result;
         }
     }
 }

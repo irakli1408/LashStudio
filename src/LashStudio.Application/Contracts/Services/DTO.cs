@@ -1,4 +1,5 @@
-﻿using LashStudio.Domain.Services;
+﻿using LashStudio.Domain.Media;
+using LashStudio.Domain.Services;
 
 namespace LashStudio.Application.Contracts.Services
 {
@@ -6,10 +7,10 @@ namespace LashStudio.Application.Contracts.Services
 
     // было Guid → стало long
     public record ServiceMediaVm(
-        long MediaAssetId,
+        long AssetId,
         string? Url,             // если у тебя есть таблица Asset c путями
         string? ThumbUrl,        // миниатюра, если генерируешь
-        string? ContentType,     // image/jpeg, video/mp4 ...
+        MediaType? MediaType,     // image/jpeg, video/mp4 ...
         int SortOrder,
         bool IsCover,
         DateTime CreatedAtUtc);

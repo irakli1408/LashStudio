@@ -42,7 +42,7 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdmin
                 .ToListAsync(ct);
 
             // id обложки (как раньше)
-            var coverMediaId = media.FirstOrDefault(m => m.IsCover)?.MediaAssetId;
+            var coverMediaId = media.FirstOrDefault(m => m.IsCover)?.AssetId;
 
             // 3. Локали
             var locales = service.Locales
