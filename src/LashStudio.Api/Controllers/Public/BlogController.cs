@@ -14,7 +14,7 @@ namespace LashStudio.Api.Controllers.Public
         public BlogController(ISender sender) : base(sender) { }
 
         [HttpGet]
-        [OutputCache(PolicyName = "public-10m-tagged")]
+        //[OutputCache(PolicyName = "public-10m-tagged")]
         public Task<PagedResult<BlogListItemVm>> List(
             string culture, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
             => Sender.Send(new GetBlogListQuery(culture, page, pageSize));

@@ -39,7 +39,7 @@ namespace LashStudio.Application.Handlers.Public.Queries.AboutPerson
 
             var media = await _db.MediaAttachments
                 .AsNoTracking()
-                .Where(m => m.OwnerType == MediaOwnerType.AboutPage && m.OwnerKey == ownerKey)
+                .Where(m => m.OwnerType == MediaOwnerType.About && m.OwnerKey == ownerKey)
                 .OrderBy(m => m.SortOrder)
                 .Select(m => new PublicMediaVm(
                     m.MediaAssetId,

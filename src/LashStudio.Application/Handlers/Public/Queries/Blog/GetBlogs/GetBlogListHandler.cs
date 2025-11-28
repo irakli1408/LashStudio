@@ -22,7 +22,8 @@ namespace LashStudio.Application.Handlers.Public.Queries.Blog.GetBlogs
 
             var baseQuery = _db.Posts
                 .AsNoTracking()
-                .Where(p => p.Status == Domain.Blog.PostStatus.Published)
+                //.Where(p => p.Status == Domain.Blog.PostStatus.Published)
+                .Where(p => p.IsActive == true)
                 .Include(p => p.Locales)
                 .Include(p => p.CoverMedia);
 
