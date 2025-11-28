@@ -25,7 +25,8 @@ namespace LashStudio.Application.Handlers.Public.Queries.Blog.GetBlogBySlug
                 .FirstOrDefaultAsync(x =>
                     x.Culture == culture &&
                     x.Slug == slug &&
-                    x.Post.Status == Domain.Blog.PostStatus.Published, ct)
+                    //x.Post.Status == Domain.Blog.PostStatus.Published, ct)
+                    x.Post.IsActive == true, ct)
                 ?? throw new KeyNotFoundException("post_not_found");
 
             string? coverUrl = pl.Post.CoverMedia is null ? null
