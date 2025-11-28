@@ -3,6 +3,7 @@ using LashStudio.Application.Handlers.Admin.Commands.Courses.Create;
 using LashStudio.Application.Handlers.Admin.Commands.Courses.Delete;
 using LashStudio.Application.Handlers.Admin.Commands.Courses.DTO;
 using LashStudio.Application.Handlers.Admin.Commands.Courses.Update;
+using LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminDetails;
 using LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminList;
 using LashStudio.Application.Handlers.Public.Queries.Blog.GetBlogs;
 using MediatR;

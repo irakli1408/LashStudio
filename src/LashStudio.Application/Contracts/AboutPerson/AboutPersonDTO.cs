@@ -1,4 +1,6 @@
-﻿namespace LashStudio.Application.Contracts.AboutPerson
+﻿using LashStudio.Domain.Media;
+
+namespace LashStudio.Application.Contracts.AboutPerson
 {
     public sealed record AboutLocaleDto(
         string Culture,
@@ -7,10 +9,10 @@
         string BodyHtml);
 
     public sealed record AboutMediaVm(
-        long MediaAssetId,
+        long AssetId,
         string? Url,             // если у тебя есть таблица Asset c путями
         string? ThumbUrl,        // миниатюра, если генерируешь
-        string? ContentType,     // image/jpeg, video/mp4 ...
+        MediaType? MediaType,     // image/jpeg, video/mp4 ...
         int SortOrder,
         bool IsCover,
         DateTime CreatedAtUtc
@@ -21,6 +23,7 @@
         bool IsActive,
         DateTime CreatedAtUtc,
         DateTime? PublishedAtUtc,
+        long? CoverMediaId,
         List<AboutLocaleDto> Locales,
         List<AboutMediaVm> Media       // ← добавили
     );

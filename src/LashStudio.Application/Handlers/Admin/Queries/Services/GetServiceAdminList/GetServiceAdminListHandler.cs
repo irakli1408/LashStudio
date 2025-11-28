@@ -28,15 +28,14 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdmin
         }
 
         public async Task<List<ServiceListItemWithMediaVm>> Handle(
-            GetServiceAdminListQuery q,
-            CancellationToken ct)
+     GetServiceAdminListQuery q,
+     CancellationToken ct)
         {
             var culture = _state.CurrentCulture;
             var neutral = !string.IsNullOrEmpty(culture) && culture.Length >= 2
                 ? culture[..2]
                 : null;
 
-            // базовый запрос по сервисам
             var baseQuery = _db.Services
                 .AsNoTracking()
                 .Where(s => !q.Category.HasValue || s.Category == q.Category)
@@ -56,7 +55,6 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdmin
 
             var ordered = baseQuery.OrderBy(x => x.Title);
 
-            // 1) Забираем из БД "сырые" данные (без ToUrl)
             var raw = await ordered
                 .Select(x => new
                 {
@@ -81,28 +79,36 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdmin
                 })
                 .ToListAsync(ct);
 
-            // 2) В памяти мапим в итоговые VM и прогоняем через ToUrl
-            var result = raw
-             .Select(x => new ServiceListItemWithMediaVm(
-                 x.Id,
-                 x.Slug,
-                 x.Title,
-                 x.Price,
-                 x.Media
-                     .Select(m => new ServiceMediaVm(
-                         m.MediaAssetId,                                       // mediaAssetId
-                         MediaUrlHelper.ToUrl(_opt.Value, m.StoredPath),                                  // url
-                         m.ThumbStoredPath is null ? null : MediaUrlHelper.ToUrl(_opt.Value, m.ThumbStoredPath), // thumbUrl (может быть null)
-                         (MediaType)m.Type,                                    // contentType / type
-                         m.SortOrder,                                          // sortOrder
-                         m.IsCover,                                            // isCover
-                         m.CreatedAtUtc                                        // createdAtUtc
-                     ))
-                     .ToList()
-             ))
-             .ToList();
+            var result = raw.Select(x =>
+            {
+                var mediaList = x.Media
+                    .Select(m => new ServiceMediaVm(
+                        AssetId: m.MediaAssetId,
+                        Url: MediaUrlHelper.ToUrl(_opt.Value, m.StoredPath),
+                        ThumbUrl: m.ThumbStoredPath is null
+                            ? null
+                            : MediaUrlHelper.ToUrl(_opt.Value, m.ThumbStoredPath),
+                        MediaType: (MediaType)m.Type,
+                        SortOrder: m.SortOrder,
+                        IsCover: m.IsCover,
+                        CreatedAtUtc: m.CreatedAtUtc
+                    ))
+                    .ToList();
 
-            return result;
+                var coverMediaId = mediaList.FirstOrDefault(mm => mm.IsCover)?.AssetId;
+
+                return new ServiceListItemWithMediaVm(
+                    Id: x.Id,
+                    Slug: x.Slug,
+                    Title: x.Title,
+                    Price: x.Price,
+                    CoverMediaId: coverMediaId,
+                    Media: mediaList
+                );
+            })
+            .ToList();
+
+            return result; 
         }
     }
 }

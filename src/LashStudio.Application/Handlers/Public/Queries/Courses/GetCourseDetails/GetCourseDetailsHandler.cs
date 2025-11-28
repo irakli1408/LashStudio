@@ -1,65 +1,107 @@
 ﻿using LashStudio.Application.Common.Abstractions;
-using LashStudio.Application.Common.Media;
+using LashStudio.Application.Common.Helpers;
+using LashStudio.Application.Common.Options;
 using LashStudio.Application.Exceptions;
 using LashStudio.Application.Handlers.Admin.Commands.Courses.DTO;
+using LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminDetails;
 using LashStudio.Domain.Media;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
+using Microsoft.Extensions.Options;
 
 namespace LashStudio.Application.Handlers.Public.Queries.Courses.GetCourseDetails
 {
-    public sealed class GetCourseDetailsHandler
-     : IRequestHandler<GetCourseDetailsQuery, CourseDetailsVm>
+    public sealed class GetCourseAdminDetailsHandler
+    : IRequestHandler<GetCourseAdminDetailsQuery, CourseAdminDto>
     {
         private readonly IAppDbContext _db;
-        private readonly IMediaUrlBuilder _media;
+        private readonly IOptions<MediaOptions> _opt;
 
-        public GetCourseDetailsHandler(IAppDbContext db, IMediaUrlBuilder media)
-        { _db = db; _media = media; }
-
-        public async Task<CourseDetailsVm> Handle(GetCourseDetailsQuery q, CancellationToken ct)
+        public GetCourseAdminDetailsHandler(IAppDbContext db, IOptions<MediaOptions> opt)
         {
-            var e = await _db.Courses.AsNoTracking()
-                .Include(x => x.Locales)
-                .FirstOrDefaultAsync(x => x.IsActive && x.Slug == q.Slug, ct)
-                ?? throw new NotFoundException("course_not_found", "course_not_found");
+            _db = db;
+            _opt = opt;
+        }
 
-            var loc = e.Locales.FirstOrDefault(l => l.Culture == q.Culture) ?? e.Locales.FirstOrDefault();
+        public async Task<CourseAdminDto> Handle(GetCourseAdminDetailsQuery q, CancellationToken ct)
+        {
+            var row = await _db.Courses.AsNoTracking()
+                .Where(c => c.Id == q.Id)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Slug,
+                    c.Level,
+                    c.IsActive,
+                    c.CreatedAtUtc,
+                    c.PublishedAtUtc,
+                    c.Price,
+                    c.DurationHours,
 
-            // батчить не нужно — один курс
-            var ownerKey = e.Id.ToString(CultureInfo.InvariantCulture);
+                    CoverAssetId = _db.MediaAttachments
+                        .Where(a => a.OwnerType == MediaOwnerType.Course &&
+                                    a.OwnerKey == c.OwnerKey &&
+                                    a.IsCover)
+                        .Select(a => (long?)a.MediaAssetId)
+                        .FirstOrDefault(),
 
-            var attachments = await _db.MediaAttachments.AsNoTracking()
-                .Where(a => a.OwnerType == MediaOwnerType.Course && a.OwnerKey == ownerKey)
-                .OrderBy(a => a.SortOrder)
-                .Select(a => new { a.MediaAssetId, a.SortOrder, a.IsCover })
-                .ToListAsync(ct);
+                    Locales = c.Locales
+                        .OrderBy(l => l.Culture)
+                        .Select(l => new CourseLocaleDto(
+                            l.Culture,
+                            l.Title,
+                            l.ShortDescription,
+                            l.FullDescription))
+                        .ToList(),
 
-            var media = attachments
-                .Select(a => new CourseMediaVm(
-                    AssetId: a.MediaAssetId,
-                    Url: _media.Url(a.MediaAssetId),
-                    SortOrder: a.SortOrder,
-                    IsCover: a.IsCover))
+                    // ВСЕ нужные поля из MediaAsset
+                    Media = _db.MediaAttachments
+                        .Where(a => a.OwnerType == MediaOwnerType.Course &&
+                                    a.OwnerKey == c.OwnerKey)
+                        .OrderBy(a => a.SortOrder)
+                        .Select(a => new
+                        {
+                            a.MediaAssetId,
+                            a.SortOrder,
+                            a.IsCover,
+                            a.CreatedAtUtc,
+                            a.MediaAsset.StoredPath,
+                            a.MediaAsset.ThumbStoredPath,
+                            a.MediaAsset.Type
+                        })
+                        .ToList()
+                })
+                .FirstOrDefaultAsync(ct);
+
+            if (row is null)
+                throw new NotFoundException("course_not_found");
+
+            // собираем VM в памяти + строим Url
+            var media = row.Media
+                .Select(m => new CourseMediaVm(
+                    m.MediaAssetId,
+                    MediaUrlHelper.ToUrl(_opt.Value,m.StoredPath),
+                    ThumbUrl: m.ThumbStoredPath is null ? null : MediaUrlHelper.ToUrl(_opt.Value, m.ThumbStoredPath),
+                    m.Type,                              
+                    m.SortOrder,
+                    m.IsCover,
+                    m.CreatedAtUtc))
                 .ToList();
 
-            var coverUrl = e.CoverMediaId is not null
-                ? _media.Url(e.CoverMediaId.Value)
-                : media.FirstOrDefault(m => m.IsCover)?.Url;
-
-            return new CourseDetailsVm(
-                Id: e.Id,
-                Slug: e.Slug,
-                Title: loc?.Title ?? "(no title)",
-                ShortDescription: loc?.ShortDescription,
-                FullDescription: loc?.FullDescription,
-                Level: e.Level,
-                Price: e.Price,
-                DurationHours: e.DurationHours,
-                CoverUrl: coverUrl,
+            return new CourseAdminDto(
+                Id: row.Id,
+                Slug: row.Slug,
+                Level: row.Level,
+                IsActive: row.IsActive,
+                CreatedAtUtc: row.CreatedAtUtc,
+                PublishedAtUtc: row.PublishedAtUtc,
+                Price: row.Price,
+                DurationHours: row.DurationHours,
+                CoverMediaId: row.CoverAssetId,
+                Locales: row.Locales,
                 Media: media
             );
         }
     }
+
 }

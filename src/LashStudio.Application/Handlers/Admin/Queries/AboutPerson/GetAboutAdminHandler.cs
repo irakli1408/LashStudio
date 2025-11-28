@@ -20,25 +20,28 @@ namespace LashStudio.Application.Handlers.Admin.Queries.AboutPerson
                 .FirstOrDefaultAsync(ct)
                 ?? throw new NotFoundException("about_not_found", "about_not_found");
 
-            // OwnerKey = строковое представление Id (long -> string) для общего media-флоу
             var ownerKey = about.Id.ToString();
 
-            // Забираем привязанные медиа (позиционные аргументы в new AboutMediaVm(...))
+            // 1) Забираем media
             var media = await _db.MediaAttachments
                 .AsNoTracking()
-                .Where(m => m.OwnerType == MediaOwnerType.AboutPage && m.OwnerKey == ownerKey)
+                .Where(m => m.OwnerType == MediaOwnerType.About && m.OwnerKey == ownerKey)
                 .OrderBy(m => m.SortOrder)
                 .Select(m => new AboutMediaVm(
-                    m.MediaAssetId,   // MediaAssetId (long)
-                    null,             // Url (если нужно — джойнить к таблице ассетов)
-                    null,             // ThumbUrl
-                    null,             // ContentType
-                    m.SortOrder,      // SortOrder
-                    m.IsCover,        // IsCover
-                    m.CreatedAtUtc    // CreatedAtUtc
+                    m.MediaAssetId,
+                    m.MediaAsset.StoredPath,
+                    m.MediaAsset.ThumbStoredPath,
+                    m.MediaAsset.Type,
+                    m.SortOrder,
+                    m.IsCover,
+                    m.CreatedAtUtc
                 ))
                 .ToListAsync(ct);
 
+            // 2) Находим cover (если есть)
+            var coverMediaId = media.FirstOrDefault(m => m.IsCover)?.AssetId;
+
+            // 3) Локали
             var locales = about.Locales
                 .OrderBy(l => l.Culture)
                 .Select(l => new AboutLocaleDto(
@@ -49,15 +52,16 @@ namespace LashStudio.Application.Handlers.Admin.Queries.AboutPerson
                 ))
                 .ToList();
 
+            // 4) Финальный DTO с CoverMediaId
             return new AboutAdminDto(
-                about.Id,
-                about.IsActive,
-                about.CreatedAtUtc,
-                about.PublishedAtUtc,
-                locales,
-                media
+                Id: about.Id,
+                IsActive: about.IsActive,
+                CreatedAtUtc: about.CreatedAtUtc,
+                PublishedAtUtc: about.PublishedAtUtc,
+                CoverMediaId: coverMediaId,   
+                Locales: locales,
+                Media: media
             );
         }
     }
 }
-

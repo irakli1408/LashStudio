@@ -1,20 +1,27 @@
 ﻿using LashStudio.Application.Common.Abstractions;
+using LashStudio.Application.Common.Helpers;
+using LashStudio.Application.Common.Options;
 using LashStudio.Application.Handlers.Admin.Commands.Courses.DTO;
 using LashStudio.Application.Handlers.Public.Queries.Blog.GetBlogs;
 using LashStudio.Domain.Media;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Globalization;
 
 namespace LashStudio.Application.Handlers.Public.Queries.Courses.GetCourseList
 {
     public sealed class GetCourseListHandler
-     : IRequestHandler<GetCourseListQuery, PagedResult<CourseListItemVm>>
+        : IRequestHandler<GetCourseListQuery, PagedResult<CourseListItemVm>>
     {
         private readonly IAppDbContext _db;
-        private readonly IMediaUrlBuilder _media;
-        public GetCourseListHandler(IAppDbContext db, IMediaUrlBuilder media)
-        { _db = db; _media = media; }
+        private readonly IOptions<MediaOptions> _opt;
+
+        public GetCourseListHandler(IAppDbContext db, IOptions<MediaOptions> opt)
+        {
+            _db = db;
+            _opt = opt;
+        }
 
         public async Task<PagedResult<CourseListItemVm>> Handle(GetCourseListQuery q, CancellationToken ct)
         {
@@ -38,7 +45,9 @@ namespace LashStudio.Application.Handlers.Public.Queries.Courses.GetCourseList
                     x.DurationHours,
                     x.CoverMediaId,
                     Title = x.Locales
-                        .Where(l => l.Culture == q.Culture).Select(l => l.Title).FirstOrDefault()
+                        .Where(l => l.Culture == q.Culture)
+                        .Select(l => l.Title)
+                        .FirstOrDefault()
                         ?? x.Locales.Select(l => l.Title).FirstOrDefault()
                 })
                 .ToListAsync(ct);
@@ -56,7 +65,11 @@ namespace LashStudio.Application.Handlers.Public.Queries.Courses.GetCourseList
                     a.OwnerKey,
                     a.MediaAssetId,
                     a.SortOrder,
-                    a.IsCover
+                    a.IsCover,
+                    a.CreatedAtUtc,
+                    a.MediaAsset.StoredPath,
+                    a.MediaAsset.ThumbStoredPath,
+                    a.MediaAsset.Type
                 })
                 .ToListAsync(ct);
 
@@ -65,13 +78,21 @@ namespace LashStudio.Application.Handlers.Public.Queries.Courses.GetCourseList
                 .GroupBy(a => a.OwnerKey)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.OrderBy(x => x.SortOrder)
-                          .Select(x => new CourseMediaVm(
-                              AssetId: x.MediaAssetId,
-                              Url: _media.Url(x.MediaAssetId),
-                              SortOrder: x.SortOrder,
-                              IsCover: x.IsCover))
-                          .ToList());
+                    g => g
+                        .OrderBy(x => x.SortOrder)
+                        .Select(x => new CourseMediaVm(
+                            AssetId: x.MediaAssetId,
+                            Url: MediaUrlHelper.ToUrl(_opt.Value, x.StoredPath),
+                            ThumbUrl: x.ThumbStoredPath is null
+                                ? null
+                                : MediaUrlHelper.ToUrl(_opt.Value, x.ThumbStoredPath),
+                            MediaType: x.Type,
+                            SortOrder: x.SortOrder,
+                            IsCover: x.IsCover,
+                            CreatedAtUtc: x.CreatedAtUtc
+                        ))
+                        .ToList()
+                );
 
             // 5) собираем итоговые элементы
             var items = rows.Select(r =>
@@ -80,10 +101,13 @@ namespace LashStudio.Application.Handlers.Public.Queries.Courses.GetCourseList
                 mediaByOwner.TryGetValue(key, out var mediaList);
                 mediaList ??= new List<CourseMediaVm>();
 
-                // cover: сначала из поля CoverMediaId, иначе — из IsCover в списке
-                string? coverUrl = r.CoverMediaId is not null
-                    ? _media.Url(r.CoverMediaId.Value)
-                    : mediaList.FirstOrDefault(m => m.IsCover)?.Url;
+                // cover: сначала по CoverMediaId, иначе — по IsCover
+                var coverMedia = (r.CoverMediaId is not null
+                        ? mediaList.FirstOrDefault(m => m.AssetId == r.CoverMediaId.Value)
+                        : null)
+                    ?? mediaList.FirstOrDefault(m => m.IsCover);
+
+                var coverUrl = coverMedia?.Url;
 
                 return new CourseListItemVm(
                     Slug: r.Slug,
@@ -92,7 +116,8 @@ namespace LashStudio.Application.Handlers.Public.Queries.Courses.GetCourseList
                     Price: r.Price,
                     DurationHours: r.DurationHours,
                     CoverUrl: coverUrl,
-                    Media: mediaList);
+                    Media: mediaList
+                );
             }).ToList();
 
             return new PagedResult<CourseListItemVm>(total, q.Page, q.PageSize, items);

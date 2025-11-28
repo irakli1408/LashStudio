@@ -1,4 +1,5 @@
 ﻿using LashStudio.Domain.Courses;
+using LashStudio.Domain.Media;
 
 namespace LashStudio.Application.Handlers.Admin.Commands.Courses.DTO
 {
@@ -6,9 +7,12 @@ namespace LashStudio.Application.Handlers.Admin.Commands.Courses.DTO
 
     public sealed record CourseMediaVm(
      long AssetId,
-     string Url,
-     int SortOrder,
-     bool IsCover);
+        string? Url,            
+        string? ThumbUrl,       
+        MediaType? MediaType,     
+        int SortOrder,
+        bool IsCover,
+        DateTime CreatedAtUtc);
 
     public sealed record CourseAdminListItemVm(
         long Id,

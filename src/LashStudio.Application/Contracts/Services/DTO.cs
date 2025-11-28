@@ -31,6 +31,7 @@ namespace LashStudio.Application.Contracts.Services
     string Slug,
     string Title,
     decimal Price,
+    long? CoverMediaId,
     List<ServiceMediaVm> Media
 );
 
