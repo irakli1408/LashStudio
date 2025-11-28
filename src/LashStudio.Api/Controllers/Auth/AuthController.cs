@@ -1,7 +1,7 @@
-﻿using LashStudio.Application.Common.EmailSender.DTO;
+﻿using Asp.Versioning;
+using LashStudio.Application.Common.EmailSender.DTO;
 using LashStudio.Application.Handlers.Admin.Commands.Email.Commands.ForgotPassword;
 using LashStudio.Application.Handlers.Admin.Commands.Email.Commands.ResetPassword;
-using LashStudio.Application.Handlers.Auth.Command;
 using LashStudio.Application.Handlers.Auth.Command.Login;
 using LashStudio.Application.Handlers.Auth.Command.Logout;
 using LashStudio.Application.Handlers.Auth.Command.Refresh;
@@ -17,7 +17,9 @@ using System.Security.Claims;
 namespace LashStudio.Api.Controllers.Auth
 {
     [ApiController]
-    [Route("api/auth")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/{culture}/auth")]
+
     public sealed class AuthController : ControllerBase
     {
         private readonly IMediator _m;

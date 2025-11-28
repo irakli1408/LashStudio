@@ -1,4 +1,5 @@
-﻿using LashStudio.Application.Contracts.Services;
+﻿using Asp.Versioning;
+using LashStudio.Application.Contracts.Services;
 using LashStudio.Application.Handlers.Admin.Commands.Services.Create;
 using LashStudio.Application.Handlers.Admin.Commands.Services.Delete;
 using LashStudio.Application.Handlers.Admin.Commands.Services.Update;
@@ -11,7 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace LashStudio.Api.Controllers.Admin
 {
     [ApiController]
-    [Route("api/admin/services")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/{culture}/admin/services")]
+
     public sealed class AdminServicesController : ControllerBase
     {
         private readonly IMediator _m;

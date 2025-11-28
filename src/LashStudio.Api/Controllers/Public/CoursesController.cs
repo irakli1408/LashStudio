@@ -1,4 +1,5 @@
-﻿using LashStudio.Application.Handlers.Admin.Commands.Courses.DTO;
+﻿using Asp.Versioning;
+using LashStudio.Application.Handlers.Admin.Commands.Courses.DTO;
 using LashStudio.Application.Handlers.Public.Queries.Blog.GetBlogs;
 using LashStudio.Application.Handlers.Public.Queries.Courses.GetCourseDetails;
 using LashStudio.Application.Handlers.Public.Queries.Courses.GetCourseList;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("api/v1/{culture}/courses")]
 public sealed class CoursesController : ControllerBase
 {

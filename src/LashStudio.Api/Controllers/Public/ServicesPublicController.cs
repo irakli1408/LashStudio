@@ -1,4 +1,5 @@
-﻿using LashStudio.Application.Contracts.Services;
+﻿using Asp.Versioning;
+using LashStudio.Application.Contracts.Services;
 using LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdminDetails;
 using LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdminList;
 using LashStudio.Domain.Services;
@@ -9,7 +10,8 @@ using Microsoft.AspNetCore.OutputCaching;
 namespace LashStudio.Api.Controllers.Public
 {
     [ApiController]
-    [Route("api/services")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/{culture}/services")]
     public sealed class ServicesPublicController : ControllerBase
     {
         private readonly IMediator _m;

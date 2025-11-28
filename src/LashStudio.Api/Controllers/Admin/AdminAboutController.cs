@@ -1,4 +1,5 @@
-﻿using LashStudio.Application.Contracts.AboutPerson;
+﻿using Asp.Versioning;
+using LashStudio.Application.Contracts.AboutPerson;
 using LashStudio.Application.Handlers.Admin.Commands.AboutPerson.Delete;
 using LashStudio.Application.Handlers.Admin.Commands.AboutPerson.Upsert;
 using LashStudio.Application.Handlers.Admin.Queries.AboutPerson;
@@ -8,7 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace LashStudio.Api.Controllers.Admin
 {
     [ApiController]
-    [Route("api/admin/about")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/{culture}/admin/about")]
     public sealed class AdminAboutController : ControllerBase
     {
         private readonly IMediator _m;

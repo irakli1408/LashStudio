@@ -1,4 +1,5 @@
 ﻿using LashStudio.Application.Common.Abstractions;
+using LashStudio.Application.Common.Helpers;
 using LashStudio.Application.Common.Options;
 using LashStudio.Application.Contracts.Services;
 using LashStudio.Domain.Media;
@@ -80,12 +81,6 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdmin
                 })
                 .ToListAsync(ct);
 
-            // локальная функция — уже для LINQ to Objects
-            string ToUrl(string rel)
-                => $"{_opt.Value.RequestPath.TrimEnd('/')}/{rel}"
-                    .Replace("//", "/")
-                    .Replace("\\", "/");
-
             // 2) В памяти мапим в итоговые VM и прогоняем через ToUrl
             var result = raw
              .Select(x => new ServiceListItemWithMediaVm(
@@ -96,8 +91,8 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Services.GetServiceAdmin
                  x.Media
                      .Select(m => new ServiceMediaVm(
                          m.MediaAssetId,                                       // mediaAssetId
-                         ToUrl(m.StoredPath),                                  // url
-                         m.ThumbStoredPath is null ? null : ToUrl(m.ThumbStoredPath), // thumbUrl (может быть null)
+                         MediaUrlHelper.ToUrl(_opt.Value, m.StoredPath),                                  // url
+                         m.ThumbStoredPath is null ? null : MediaUrlHelper.ToUrl(_opt.Value, m.ThumbStoredPath), // thumbUrl (может быть null)
                          (MediaType)m.Type,                                    // contentType / type
                          m.SortOrder,                                          // sortOrder
                          m.IsCover,                                            // isCover

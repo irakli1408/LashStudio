@@ -20,7 +20,7 @@ namespace LashStudio.Application.Contracts.Media
         long AssetId,
         string? Name,
         int MediaType,  // "image" | "video"
-        string Url,
+        string? Url,
         string? ThumbUrl
     );
 

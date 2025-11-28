@@ -1,4 +1,5 @@
 ﻿using LashStudio.Application.Common.Abstractions;
+using LashStudio.Application.Common.Helpers;
 using LashStudio.Application.Common.Options;
 using LashStudio.Application.Contracts.Media;
 using LashStudio.Domain.Media;
@@ -37,18 +38,12 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Media.GetMediaLibrary
                 })
                 .ToListAsync(ct);
 
-            // 2) Маппинг в VM в памяти
-            string ToUrl(string rel)
-                => $"{_opt.Value.RequestPath.TrimEnd('/')}/{rel}"
-                    .Replace("//", "/")
-                    .Replace("\\", "/");
-
             var items = raw.Select(r => new MediaItemVm(
                 AssetId: r.Id,
                 Name: r.OriginalFileName,
                 MediaType: (int)r.Type,
-                Url: ToUrl(r.StoredPath),
-                ThumbUrl: r.ThumbStoredPath is null ? null : ToUrl(r.ThumbStoredPath)
+                Url: MediaUrlHelper.ToUrl(_opt.Value, r.StoredPath),
+                ThumbUrl: r.ThumbStoredPath is null ? null : MediaUrlHelper.ToUrl(_opt.Value, r.ThumbStoredPath)
             )).ToList();
 
             var photos = items.Where(x => x.MediaType == (int)MediaType.Photo).ToList();

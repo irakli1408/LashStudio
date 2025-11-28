@@ -1,4 +1,5 @@
-﻿using LashStudio.Application.Contracts.Contacts;
+﻿using Asp.Versioning;
+using LashStudio.Application.Contracts.Contacts;
 using LashStudio.Application.Handlers.Admin.Commands.Contacts.Delete;
 using LashStudio.Application.Handlers.Admin.Commands.Contacts.Upsert;
 using LashStudio.Application.Handlers.Admin.Commands.ContactsCta.Create;
@@ -9,15 +10,14 @@ using LashStudio.Application.Handlers.Admin.Commands.ContactsCta.Update;
 using LashStudio.Application.Handlers.Admin.Commands.ContactsCta.Upsert;
 using LashStudio.Application.Handlers.Admin.Queries.Contacts.GetContactProfileAdmin;
 using LashStudio.Application.Handlers.Admin.Queries.ContactsCta.GetContactCta;
-using LashStudio.Application.Handlers.Public.Queries.Blog.GetBlogs;
-using LashStudio.Domain.Contacts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LashStudio.Api.Controllers.Admin
 {
     [ApiController]
-    [Route("api/admin/contacts")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/{culture}/admin/contacts")]
     public sealed class AdminContactsController : ControllerBase
     {
         private readonly IMediator _m;

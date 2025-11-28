@@ -1,4 +1,5 @@
-﻿using LashStudio.Application.Contracts.AboutPerson;
+﻿using Asp.Versioning;
+using LashStudio.Application.Contracts.AboutPerson;
 using LashStudio.Application.Handlers.Public.Queries.AboutPerson;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,8 @@ using Microsoft.AspNetCore.OutputCaching;
 namespace LashStudio.Api.Controllers.Public
 {
     [ApiController]
-    [Route("api/public/about")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/{culture}/public/about")]
     public sealed class PublicAboutController : ControllerBase
     {
         private readonly IMediator _m;

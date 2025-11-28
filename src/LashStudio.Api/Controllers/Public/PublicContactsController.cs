@@ -1,4 +1,5 @@
-﻿using LashStudio.Application.Contracts.Contacts;
+﻿using Asp.Versioning;
+using LashStudio.Application.Contracts.Contacts;
 using LashStudio.Application.Handlers.Public.Queries.Contacts.GetContactProfile;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,9 @@ using Microsoft.AspNetCore.OutputCaching;
 namespace LashStudio.Api.Controllers.Public
 {
     [ApiController]
-    [Route("api/public/contacts")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/{culture}/public/contacts")]
+
     public sealed class PublicContactsController : ControllerBase
     {
         private readonly IMediator _m;

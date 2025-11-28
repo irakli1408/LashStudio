@@ -1,4 +1,5 @@
-﻿using LashStudio.Application.Handlers.Admin.Commands.Courses.Create;
+﻿using Asp.Versioning;
+using LashStudio.Application.Handlers.Admin.Commands.Courses.Create;
 using LashStudio.Application.Handlers.Admin.Commands.Courses.Delete;
 using LashStudio.Application.Handlers.Admin.Commands.Courses.DTO;
 using LashStudio.Application.Handlers.Admin.Commands.Courses.Update;
@@ -11,7 +12,8 @@ using Microsoft.AspNetCore.OutputCaching;
 namespace LashStudio.Api.Controllers.Admin
 {
     [ApiController]
-    [Route("api/admin/courses")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/{culture}/admin/courses")]
     public sealed class AdminCoursesController : ControllerBase
     {
         private readonly IMediator _m;
