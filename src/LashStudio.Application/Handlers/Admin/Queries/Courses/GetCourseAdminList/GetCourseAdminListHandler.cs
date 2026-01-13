@@ -27,6 +27,9 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminLi
         {
             var baseQ = _db.Courses.AsNoTracking();
 
+                baseQ = baseQ.Where(c => c.Level == q.Level);          
+
+            // Search
             string? s = null;
             if (!string.IsNullOrWhiteSpace(q.Search))
             {
@@ -38,7 +41,7 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminLi
 
             var total = await baseQ.CountAsync(ct);
 
-            // 1) Берём страницу курсов
+            // 1) Page of courses
             var rows = await baseQ
                 .OrderByDescending(x => x.PublishedAtUtc ?? x.CreatedAtUtc)
                 .Skip((q.Page - 1) * q.PageSize)
@@ -51,7 +54,8 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminLi
                     c.IsActive,
                     c.CreatedAtUtc,
                     c.PublishedAtUtc,
-                    TitleAny = (s != null
+                    TitleAny =
+                        (s != null
                             ? c.Locales
                                 .Where(l => ((l.Title ?? "").ToLower().Contains(s)))
                                 .Select(l => l.Title)
@@ -62,12 +66,12 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminLi
                 })
                 .ToListAsync(ct);
 
-            // 2) OwnerKey'и для батча
+            // 2) OwnerKeys for batch media load
             var ownerKeys = rows
                 .Select(r => r.Id.ToString(CultureInfo.InvariantCulture))
                 .ToArray();
 
-            // 3) Одним запросом тянем все медиа для этой страницы
+            // 3) Single query: all media for this page
             var attachments = await _db.MediaAttachments.AsNoTracking()
                 .Where(a => a.OwnerType == MediaOwnerType.Course && ownerKeys.Contains(a.OwnerKey))
                 .Select(a => new
@@ -83,7 +87,7 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminLi
                 })
                 .ToListAsync(ct);
 
-            // 4) Группируем по владельцу и строим VM (Url собираем в памяти)
+            // 4) Group by owner and build VM (URLs in memory)
             var mediaByOwner = attachments
                 .GroupBy(a => a.OwnerKey)
                 .ToDictionary(
@@ -104,13 +108,13 @@ namespace LashStudio.Application.Handlers.Admin.Queries.Courses.GetCourseAdminLi
                         .ToList()
                 );
 
-            // 5) Собираем итог
+            // 5) Final projection
             var items = rows.Select(r =>
             {
                 var key = r.Id.ToString(CultureInfo.InvariantCulture);
+
                 mediaByOwner.TryGetValue(key, out var media);
                 media ??= new List<CourseMediaVm>();
-
 
                 var coverMediaId = r.CoverMediaId
                     ?? media.FirstOrDefault(m => m.IsCover)?.AssetId;
