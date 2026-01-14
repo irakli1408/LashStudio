@@ -78,14 +78,32 @@ namespace LashStudio.Infrastructure.Config.Media
                 .Where(x => x.OwnerType == ownerType && x.OwnerKey == ownerKey)
                 .ToListAsync(ct);
 
-            if (!items.Any(x => x.MediaAssetId == assetId))
+            var newCover = items.SingleOrDefault(x => x.MediaAssetId == assetId);
+            if (newCover is null)
                 throw new NotFoundException("asset_not_attached", "asset_not_attached");
 
-            foreach (var i in items)
-                i.IsCover = (i.MediaAssetId == assetId);
 
-            await _db.SaveChangesAsync(ct);
+            var changed = false;
+            foreach (var i in items)
+            {
+                if (i.IsCover && i.Id != newCover.Id)
+                {
+                    i.IsCover = false;
+                    changed = true;
+                }
+            }
+
+            if (changed)
+                await _db.SaveChangesAsync(ct); 
+
+            if (!newCover.IsCover)
+            {
+                newCover.IsCover = true;
+                await _db.SaveChangesAsync(ct);
+            }
         }
+
+
 
         public Task<IReadOnlyList<MediaAttachment>> ListAsync(MediaOwnerType ownerType, string ownerKey, CancellationToken ct)
             => _db.MediaAttachments
